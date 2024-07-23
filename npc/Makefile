@@ -2,12 +2,14 @@ INC_PATH ?=
 BUILD_DIR = ./build
 OBJ_DIR = $(BUILD_DIR)/obj_dir
 
+
 NXDC_FILES = constr/top.nxdc
 
 include $(NVBOARD_HOME)/scripts/nvboard.mk
 
 TRACE_ENABLE :=
 RUN_TRACE :=
+TRACE_FILE ?= $(BUILD_DIR)/logs/trace.fst
 
 
 $(shell mkdir -p $(BUILD_DIR))
@@ -35,13 +37,18 @@ build: $(CSRCS) $(VSRCS) $(NVBOARD_ARCHIVE)
 	verilator --cc --exe --build $(TRACE_ENABLE) -j 0 \
 	--top top  $^ \
 	$(addprefix -CFLAGS , $(CXXFLAGS)) \
-	$(addprefix -LDFLAGS , $(LDFLAGS)) 
+	$(addprefix -LDFLAGS , $(LDFLAGS))  \
+	-DTRACE_FILE=$(TRACE_FILE)
 
 sim: build
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 
 run: sim
-	./obj_dir/Vtop
+	./obj_dir/Vtop ${RUN_TRACE}
+
+trace: TRACE_ENABLE=--trace-fst
+trace: RUN_TRACE=+trace
+trace: run
 
 clean:
 	rm -rf build obj_dir
