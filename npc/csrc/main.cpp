@@ -41,5 +41,6 @@ int main(int argc, char** argv) {
     nvboard_update();
   }
   nvboard_quit();
+  top->final();
   return 0;
 }
