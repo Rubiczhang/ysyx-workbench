@@ -1,4 +1,4 @@
-STUID =
+STUID = 100006534 
 STUNAME = 张东宇
 
 # DO NOT modify the following code!!!
