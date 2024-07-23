@@ -34,8 +34,7 @@ int main(int argc, char** argv) {
   // auto top = std::make_unique<Vtop>(contextp.get(), "TOP");
   const std::unique_ptr<Vtop> top{new Vtop{contextp.get(), "TOP"}};
   reset(top.get(), 10);
-  int N = 1000000;
-  while(N--){
+  while(1){
     contextp->timeInc(1);
     single_cycle(top.get());
     nvboard_update();

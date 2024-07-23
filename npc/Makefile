@@ -40,6 +40,9 @@ build: $(CSRCS) $(VSRCS) $(NVBOARD_ARCHIVE)
 sim: build
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 
+run: sim
+	./obj_dir/Vtop
+
 clean:
 	rm -rf build obj_dir
 
