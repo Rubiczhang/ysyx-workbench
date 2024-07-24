@@ -38,13 +38,13 @@ build: $(CSRCS) $(VSRCS) $(NVBOARD_ARCHIVE)
 	--top top  $^ \
 	$(addprefix -CFLAGS , $(CXXFLAGS)) \
 	$(addprefix -LDFLAGS , $(LDFLAGS))  \
-	-DTRACE_DIR=$(TRACE_DIR) -DTRACE_ENABLE
+	-CLFAGS -DTRACE_DIR=$(TRACE_DIR) -CFLAGS -DTRACE_ENABLE
 
 sim: build
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 
 run: sim
-	./obj_dir/Vtop ${RUN_TRACE} -DTRACE_DIR=$(TRACE_DIR)
+	./obj_dir/Vtop ${RUN_TRACE}
 
 trace: TRACE_ENABLE=--trace-fst
 trace: RUN_TRACE=+trace
