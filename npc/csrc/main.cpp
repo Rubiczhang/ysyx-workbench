@@ -9,6 +9,7 @@ VerilatedFstC* tfp = nullptr;
 #endif
 
 #include "Vtop.h"
+#include <iostream>
 
 void nvboard_bind_all_pins(Vtop *top);
 static Vtop dut;
@@ -50,6 +51,7 @@ int main(int argc, char** argv) {
     top->trace(tfp, 99);
     Verilated::mkdir(traceDir);
     std::string trace_file = traceDir + std::string("/wave_dump.fst");
+    std::cout << trace_file << std::endl;
     tfp->open(trace_file.c_str());
   }
 
