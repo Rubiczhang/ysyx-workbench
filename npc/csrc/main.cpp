@@ -2,7 +2,7 @@
 #include <nvboard.h>
 #include <verilated.h>
 
-#if TRACE_ENABLE
+#ifdef TRACE_ENABLE
 #include "verilated_fst_c.h"
 VerilatedFstC* tfp = nullptr;
 #endif
@@ -37,7 +37,7 @@ int main(int argc, char** argv) {
   const std::unique_ptr<VerilatedContext> contextp{new VerilatedContext};
   contextp->commandArgs(argc, argv);
 
-#if TRACE_ENABLE
+#ifdef TRACE_ENABLE
 
   const char* flag = contextp->commandArgsPlusMatch("trace");
   const char* traceDir = getenv("TRACE_DIR");
@@ -62,10 +62,10 @@ int main(int argc, char** argv) {
     top->clk = ~top->clk & 0x1;
     top->eval();
     nvboard_update();
-  #if TRACE_ENABLE
+#ifdef TRACE_ENABLE
     if(tfp)
       tfp->dump(contextp->time());
-  #endif
+#endif
   }
   nvboard_quit();
   top->final();
