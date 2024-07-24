@@ -1,6 +1,7 @@
 // #include <stdio.h>
 #include <nvboard.h>
 #include <verilated.h>
+#include <string>
 
 #ifdef TRACE_ENABLE
 #include "verilated_fst_c.h"
@@ -36,6 +37,7 @@ int main(int argc, char** argv) {
   
   const std::unique_ptr<VerilatedContext> contextp{new VerilatedContext};
   contextp->commandArgs(argc, argv);
+  const std::unique_ptr<Vtop> top{new Vtop{contextp.get(), "TOP"}};
 
 #ifdef TRACE_ENABLE
 
@@ -47,14 +49,13 @@ int main(int argc, char** argv) {
     tfp = new VerilatedFstC;
     top->trace(tfp, 99);
     Verilated::mkdir(traceDir);
-    string trace_file = traceDir + "/wave_dump.fst"
-    tfp->open(trace_file)
+    std::string trace_file = traceDir + std::string("/wave_dump.fst");
+    tfp->open(trace_file.c_str());
   }
 
 #endif  //TRACE_ENABLE
 
   // auto top = std::make_unique<Vtop>(contextp.get(), "TOP");
-  const std::unique_ptr<Vtop> top{new Vtop{contextp.get(), "TOP"}};
   reset(top.get(), 10);
   int N = 100000;
   while(N--){
