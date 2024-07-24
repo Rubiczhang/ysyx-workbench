@@ -2,6 +2,10 @@
 #include <nvboard.h>
 #include <verilated.h>
 
+#if TRACE_ENABLE
+#include "verilated_fst_c.h"
+VerilatedFstC* tfp = nullptr;
+#endif
 
 #include "Vtop.h"
 
@@ -13,8 +17,11 @@ static Vtop dut;
 void single_cycle(Vtop* top){
   top->clk = 0; 
   top->eval();
+  
   top->clk = 1; 
+
   top->eval();
+
 }
 
 void reset(Vtop* top, int n){
@@ -28,17 +35,37 @@ int main(int argc, char** argv) {
   nvboard_init();
   
   const std::unique_ptr<VerilatedContext> contextp{new VerilatedContext};
-  contextp->traceEverOn(true);
   contextp->commandArgs(argc, argv);
+
+#if TRACE_ENABLE
+
+  const char* flag = contextp->commandArgsPlusMatch("trace");
+  const char* traceDir = getenv("TRACE_DIR");
+  if(flag && (std::strcmp(flag, "+trace") == 0)){
+    contextp->traceEverOn(true);
+    VL_PRINTF("Enabling waves into %s/waves.fst\n", traceDir);
+    tfp = new VerilatedFstC;
+    top->trace(tfp, 99);
+    Verilated::mkdir(traceDir);
+    string trace_file = traceDir + "/wave_dump.fst"
+    tfp->open(trace_file)
+  }
+
+#endif  //TRACE_ENABLE
 
   // auto top = std::make_unique<Vtop>(contextp.get(), "TOP");
   const std::unique_ptr<Vtop> top{new Vtop{contextp.get(), "TOP"}};
   reset(top.get(), 10);
-  int N = 1000000;
+  int N = 100000;
   while(N--){
     contextp->timeInc(1);
-    single_cycle(top.get());
+    top->clk = ~top->clk & 0x1;
+    top->eval();
     nvboard_update();
+  #if TRACE_ENABLE
+    if(tfp)
+      tfp->dump(contextp->time());
+  #endif
   }
   nvboard_quit();
   top->final();

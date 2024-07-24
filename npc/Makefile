@@ -9,7 +9,7 @@ include $(NVBOARD_HOME)/scripts/nvboard.mk
 
 TRACE_ENABLE :=
 RUN_TRACE :=
-TRACE_FILE ?= $(BUILD_DIR)/logs/trace.fst
+TRACE_DIR ?= $(BUILD_DIR)/logs
 
 
 $(shell mkdir -p $(BUILD_DIR))
@@ -38,18 +38,18 @@ build: $(CSRCS) $(VSRCS) $(NVBOARD_ARCHIVE)
 	--top top  $^ \
 	$(addprefix -CFLAGS , $(CXXFLAGS)) \
 	$(addprefix -LDFLAGS , $(LDFLAGS))  \
-	-DTRACE_FILE=$(TRACE_FILE)
+	-DTRACE_DIR=$(TRACE_DIR)
 
 sim: build
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 
 run: sim
-	./obj_dir/Vtop ${RUN_TRACE}
+	./obj_dir/Vtop ${RUN_TRACE} -DTRACE_DIR=$(TRACE_DIR)
 
 trace: TRACE_ENABLE=--trace-fst
 trace: RUN_TRACE=+trace
 trace: run
-	gtkwave $(TRACE_FILE)
+	gtkwave $(TRACE_DIR)
 
 clean:
 	rm -rf build obj_dir
