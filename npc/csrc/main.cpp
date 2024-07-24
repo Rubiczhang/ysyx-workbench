@@ -3,6 +3,9 @@
 #include <verilated.h>
 #include <string>
 
+#define STRINGFY(x) #x
+#define TO_STRING(x) STRINGFY(x)
+
 #ifdef TRACE_ENABLE
 #include "verilated_fst_c.h"
 VerilatedFstC* tfp = nullptr;
@@ -43,7 +46,7 @@ int main(int argc, char** argv) {
 #ifdef TRACE_ENABLE
 
   const char* flag = contextp->commandArgsPlusMatch("trace");
-  const char* traceDir = """ TRACE_DIR """ ;
+  const char* traceDir = TO_STRING(TRACE_DIR) ;
   if(flag && (std::strcmp(flag, "+trace") == 0)){
     contextp->traceEverOn(true);
     VL_PRINTF("Enabling waves into %s/waves.fst\n", traceDir);
