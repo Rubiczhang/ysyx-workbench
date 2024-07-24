@@ -48,7 +48,7 @@ int main(int argc, char** argv) {
     contextp->traceEverOn(true);
     VL_PRINTF("Enabling waves into %s/waves.fst\n", traceDir);
     tfp = new VerilatedFstC;
-    assert(1);
+    assert(0);
     top->trace(tfp, 99);
     assert(1);
     Verilated::mkdir(traceDir);
