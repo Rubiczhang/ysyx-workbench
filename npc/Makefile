@@ -38,7 +38,7 @@ build: $(CSRCS) $(VSRCS) $(NVBOARD_ARCHIVE)
 	--top top  $^ \
 	$(addprefix -CFLAGS , $(CXXFLAGS)) \
 	$(addprefix -LDFLAGS , $(LDFLAGS))  \
-	-CLFAGS -DTRACE_DIR=$(TRACE_DIR) -CFLAGS -DTRACE_ENABLE
+	-CFLAGS -DTRACE_DIR=$(TRACE_DIR) -CFLAGS -DTRACE_ENABLE
 
 sim: build
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
