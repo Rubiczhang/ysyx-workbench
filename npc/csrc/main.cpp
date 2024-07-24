@@ -49,10 +49,10 @@ int main(int argc, char** argv) {
     VL_PRINTF("Enabling waves into %s/waves.fst\n", traceDir);
     tfp = new VerilatedFstC;
     top->trace(tfp, 99);
-    assert(0);
     Verilated::mkdir(traceDir);
     std::string trace_file = traceDir + std::string("/wave_dump.fst");
     tfp->open(trace_file.c_str());
+    assert(0);
   }
 
 #endif  //TRACE_ENABLE
