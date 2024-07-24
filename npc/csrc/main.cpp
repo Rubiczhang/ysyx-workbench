@@ -43,7 +43,7 @@ int main(int argc, char** argv) {
 #ifdef TRACE_ENABLE
 
   const char* flag = contextp->commandArgsPlusMatch("trace");
-  const char* traceDir = getenv("TRACE_DIR");
+  const char* traceDir = """ TRACE_DIR """ ;
   if(flag && (std::strcmp(flag, "+trace") == 0)){
     contextp->traceEverOn(true);
     VL_PRINTF("Enabling waves into %s/waves.fst\n", traceDir);
