@@ -51,8 +51,8 @@ int main(int argc, char** argv) {
     top->trace(tfp, 99);
     Verilated::mkdir(traceDir);
     std::string trace_file = traceDir + std::string("/wave_dump.fst");
-    tfp->open(trace_file.c_str());
     assert(0);
+    tfp->open(trace_file.c_str());
   }
 
 #endif  //TRACE_ENABLE
