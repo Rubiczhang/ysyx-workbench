@@ -49,7 +49,7 @@ run: sim
 trace: TRACE_ENABLE=--trace-fst
 trace: RUN_TRACE=+trace
 trace: run
-	gtkwave $(TRACE_DIR)
+	gtkwave $(TRACE_DIR)/wave_dump.fst
 
 clean:
 	rm -rf build obj_dir
