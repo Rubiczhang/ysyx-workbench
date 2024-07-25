@@ -53,7 +53,7 @@ int main(int argc, char** argv) {
     tfp = new VerilatedFstC;
     top->trace(tfp, 99);
     Verilated::mkdir(traceDir);
-    std::string trace_file = std::string(traceDir) + std::string("/wave_dump.fst");
+    std::string trace_file = std::string(traceDir) + std::string("/wave.fst");
     tfp->open(trace_file.c_str());
   }
 
