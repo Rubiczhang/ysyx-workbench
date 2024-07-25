@@ -38,7 +38,6 @@ build: $(CSRCS) $(VSRCS) $(NVBOARD_ARCHIVE)
 	--top top  $^ \
 	$(addprefix -CFLAGS , $(CXXFLAGS)) \
 	$(addprefix -LDFLAGS , $(LDFLAGS))  \
-	-CFLAGS -DTRACE_DIR=$(TRACE_DIR) -CFLAGS -DTRACE_ENABLE
 
 sim: build
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
@@ -48,8 +47,9 @@ run: sim
 
 trace: TRACE_ENABLE=--trace-fst
 trace: RUN_TRACE=+trace
+trace: CXXFLAGS += -DTRACE_DIR=$(TRACE_DIR) -DTRACE_ENABLE
 trace: run
-	gtkwave $(TRACE_DIR)/wave.fst
+	gtkwave $(TRACE_DIR)/waves.fst
 
 clean:
 	rm -rf build obj_dir
