@@ -51,7 +51,7 @@ trace: CXXFLAGS += -DTRACE_DIR=$(TRACE_DIR) -DTRACE_ENABLE
 trace: run
 
 wave:
-	gtkwave $(TRACE_DIR)/waves.fst
+	gtkwave $(TRACE_DIR)/wave.fst
 clean:
 	rm -rf build obj_dir
 

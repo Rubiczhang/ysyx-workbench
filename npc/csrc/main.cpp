@@ -31,13 +31,13 @@ void reset(Vtop* top, VerilatedContext* contextp, int n){
 }
 
 int main(int argc, char** argv) {
-  nvboard_bind_all_pins(&dut);
-  nvboard_init();
   
   const std::unique_ptr<VerilatedContext> contextp{new VerilatedContext};
   contextp->commandArgs(argc, argv);
   const std::unique_ptr<Vtop> top{new Vtop{contextp.get(), "TOP"}};
 
+  nvboard_bind_all_pins(top.get());
+  nvboard_init();
 #ifdef TRACE_ENABLE
 
   const char* flag = contextp->commandArgsPlusMatch("trace");
@@ -53,6 +53,7 @@ int main(int argc, char** argv) {
   }
 
 #endif  //TRACE_ENABLE
+
 
   // auto top = std::make_unique<Vtop>(contextp.get(), "TOP");
   reset(top.get(), contextp.get(), 10);
