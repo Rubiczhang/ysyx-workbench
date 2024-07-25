@@ -61,7 +61,7 @@ int main(int argc, char** argv) {
 
   // auto top = std::make_unique<Vtop>(contextp.get(), "TOP");
   reset(top.get(), 10);
-  int N = 100000;
+  int N = 1000000;
   while(N--){
     contextp->timeInc(1);
     top->clk = ~top->clk & 0x1;
