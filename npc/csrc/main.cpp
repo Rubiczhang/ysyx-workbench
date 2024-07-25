@@ -17,11 +17,16 @@ VerilatedFstC* tfp = nullptr;
 void nvboard_bind_all_pins(Vtop *top);
 static Vtop dut;
 
+void single_cycle(Vtop* top, VerilatedContext* contextp){
+  contextp->timeInc(1);
+  top->clk = ~top->clk & 0x1;
+  top->eval();
+  nvboard_update();
+}
 
-
-void reset(Vtop* top, int n){
+void reset(Vtop* top, VerilatedContext* contextp, int n){
   top->rst = 1;
-  // while(n--) single_cycle(top);
+  while(n--) single_cycle(top, contextp);
   top->rst = 0;
 }
 
@@ -50,7 +55,7 @@ int main(int argc, char** argv) {
 #endif  //TRACE_ENABLE
 
   // auto top = std::make_unique<Vtop>(contextp.get(), "TOP");
-  // reset(top.get(), 10);
+  reset(top.get(), contextp.get(), 10);
   while(1){
     contextp->timeInc(1);
     top->clk = ~top->clk & 0x1;
