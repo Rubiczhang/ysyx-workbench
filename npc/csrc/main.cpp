@@ -19,19 +19,9 @@ static Vtop dut;
 
 
 
-void single_cycle(Vtop* top){
-  top->clk = 0; 
-  top->eval();
-  
-  top->clk = 1; 
-
-  top->eval();
-
-}
-
 void reset(Vtop* top, int n){
   top->rst = 1;
-  while(n--) single_cycle(top);
+  // while(n--) single_cycle(top);
   top->rst = 0;
 }
 
@@ -60,7 +50,7 @@ int main(int argc, char** argv) {
 #endif  //TRACE_ENABLE
 
   // auto top = std::make_unique<Vtop>(contextp.get(), "TOP");
-  reset(top.get(), 10);
+  // reset(top.get(), 10);
   while(1){
     contextp->timeInc(1);
     top->clk = ~top->clk & 0x1;
