@@ -72,7 +72,15 @@ int main(int argc, char** argv) {
       tfp->dump(contextp->time());
 #endif
   }
+
+#ifdef TRACE_ENABLE
+    if (tfp) {
+        tfp->close();
+        delete(tfp);
+    }
+#endif
   nvboard_quit();
+
   top->final();
   return 0;
 }
