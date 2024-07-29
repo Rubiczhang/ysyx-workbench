@@ -6,12 +6,12 @@
 #define STRINGFY(x) #x
 #define TO_STRING(x) STRINGFY(x)
 
+#include "Vtop.h"
 #ifdef TRACE_ENABLE
 #include "verilated_fst_c.h"
 VerilatedFstC* tfp = nullptr;
 #endif
 
-#include "Vtop.h"
 #include <iostream>
 
 void nvboard_bind_all_pins(Vtop *top);
