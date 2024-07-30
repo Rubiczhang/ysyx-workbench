@@ -17,16 +17,18 @@ VERILATOR_TRACE_FLAGS = --trace-fst
 TOP ?= 
 CXXFLAGS ?= 
 
+include $(NVBOARD_HOME)/scripts/nvboard.mk
 CXXFLAGS += -DTOP_NAME=$(TOP)
 INC_FLAGS += $(addprefix -I, $(INC_PATH))
+LDFLAGS += $(NVBOARD_ARCHIVE)
 
 # nvboard
-NXDC_FILES = constr/top.nxdc
+NXDC_FILES = constr/$(TOP).nxdc
 
-include $(NVBOARD_HOME)/scripts/nvboard.mk
 
 SRC_AUTO_BIND = $(abspath $(BUILD_DIR)/auto_bind.cpp)
 $(SRC_AUTO_BIND): $(NXDC_FILES)
+	mkdir $(abspath $(BUILD_DIR))
 	python3 $(NVBOARD_HOME)/scripts/auto_pin_bind.py $^ $@
 
 ## end nvboard
@@ -38,13 +40,13 @@ VERILATOR_BASEOPTION = $(VSRCS) $(CSRCS) \
 
 .PHONY: sim board clean
 
-sim: $(VSRCS) $(CSRCS) 
+sim: $(VSRCS) $(CSRCS) $(SRC_AUTO_BIND) $(NVBOARD_ARCHIVE)
 	verilator $(VERILATOR_BASEOPTION)  
 
 trace: CXXFLAGS += -DTRACE_ENABLE
 trace: VERILATOR_FLAGS += $(VERILATOR_TRACE_FLAGS)
 trace: sim
-	./obj_dir/V$(TOP)
+	./obj_dir/V$(TOP) +trace
 
 
 board: $(SRC_AUTO_BIND)
@@ -52,4 +54,4 @@ board: VERILATOR_BASEOPTION += $(SRC_AUTO_BIND)
 
 
 clean:
-	rm -rf obj_dir
+	rm -rf obj_dir logs
