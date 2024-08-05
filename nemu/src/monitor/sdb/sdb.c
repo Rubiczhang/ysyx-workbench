@@ -61,7 +61,8 @@ static int cmd_si(char *args) {
   if(arg){ //There are args
     step = strtoll(arg, &endptr,  10);
     if(*endptr != '\0'){
-      printf("Wrong instrution\nStep instrution format: si [N]\n e.g.: si or si 10\n");
+      printf("%s, Step instrution format: si [N]\n e.g.: si or si 10\n"
+       , ANSI_FMT(str(Wrong instr fmt), ANSI_FG_YELLOW ANSI_BG_RED));
       return 0;
     }
   }
