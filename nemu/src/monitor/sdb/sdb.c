@@ -53,6 +53,11 @@ static int cmd_q(char *args) {
   exit(0);
 }
 
+static int cmd_s(char *args) {
+  Log("Quit\n");
+  exit(0);
+}
+
 static int cmd_help(char *args);
 
 static struct {
@@ -63,6 +68,7 @@ static struct {
   { "help", "Display information about all supported commands", cmd_help },
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
+  { "s", "Step", cmd_s },
 
   /* TODO: Add more commands */
 
