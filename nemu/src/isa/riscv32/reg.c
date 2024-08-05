@@ -15,6 +15,7 @@
 
 #include <isa.h>
 #include "local-include/reg.h"
+#define NUM_REGS 32
 
 const char *regs[] = {
   "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
@@ -24,8 +25,23 @@ const char *regs[] = {
 };
 
 void isa_reg_display() {
+  for(int i = 0; i < NUM_REGS; i++){
+    bool succ = false;
+    
+    word_t val = isa_reg_str2val(regs[i], &succ);
+    Assert(succ, "Wrong Register Name: %s", regs[i]);
+    printf("%10s %20x %20d \n", regs[i], val, val);
+  }
+  
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {
-  return 0;
+  int idx = 0;
+  for(; idx < 32; idx++){
+    if(!strcmp(s, regs[idx])){ //same
+      *success = true;
+      break;
+    }
+  }
+  return gpr(idx);    //no matter success or not 
 }

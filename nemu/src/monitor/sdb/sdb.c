@@ -53,20 +53,13 @@ static int cmd_q(char *args) {
   exit(0);
 }
 
-static int cmd_si(char *args) {
-  long long step = 1;
+static int cmd_si(char *args) ;
+
+static int cmd_info(char *args){
   char *arg = strtok(NULL, " ");
-  char *endptr;
-  
-  if(arg){ //There are args
-    step = strtoll(arg, &endptr,  10);
-    if(*endptr != '\0'){
-      printf("%s, Step instrution format: si [N]\n e.g.: si or si 10\n"
-       , ANSI_FMT(str(Wrong instr fmt), ANSI_FG_RED));
-      return 0;
-    }
+  if(!strcmp(arg, "r")){
+    isa_reg_display();
   }
-  cpu_exec(step);
   return 0;
 }
 
@@ -81,6 +74,7 @@ static struct {
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
   { "si", "Step instrution", cmd_si },
+  { "info",  "Generic command for showing things about the program being debugged.", cmd_info }
 
   /* TODO: Add more commands */
 
@@ -110,6 +104,25 @@ static int cmd_help(char *args) {
   }
   return 0;
 }
+
+static int cmd_si(char *args) {
+  long long step = 1;
+  char *arg = strtok(NULL, " ");
+  char *endptr;
+  
+  if(arg){ //There are args
+    step = strtoll(arg, &endptr,  10);
+    if(*endptr != '\0'){
+      printf("%s, Step instrution format: si [N]\n e.g.: si or si 10\n"
+       , ANSI_FMT(str(Wrong instr fmt), ANSI_FG_RED));
+      return 0;
+    }
+  }
+  cpu_exec(step);
+  return 0;
+}
+
+
 
 void sdb_set_batch_mode() {
   is_batch_mode = true;
