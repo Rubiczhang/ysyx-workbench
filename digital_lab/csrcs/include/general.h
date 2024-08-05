@@ -22,12 +22,19 @@
 #define VTOP_HEADER_NAME  APPEND_H(TOP_NAME)
 //"Vmux4to1_2bit.h"
 
+#ifdef TRACE_ENABLE
+    #include "verilated_fst_c.h"
+    extern VerilatedFstC* tfp;
+#endif  //TRACE_ENABLE
 
 #include  VTOP_HEADER_NAME
 #include <verilated.h>
 #include TOP_TEST_H
 
 #include <nvboard.h>
+
+
+void assert_with_wave(bool x);
 // void singleStep(VTOP* top);
 
 // void reset(VTOP* top);

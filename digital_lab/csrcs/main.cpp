@@ -7,21 +7,30 @@
 #include <nvboard.h>
 
 #ifdef TRACE_ENABLE
-#include "verilated_fst_c.h"
+VerilatedFstC* tfp;
 
-
-static VerilatedFstC* tfp;
-
-void ctrl_c_handler(int signum){
-    assert(signum == SIGINT);
+void exit_handler(int signum){
+    // assert(signum == SIGINT);
     if(tfp){
         tfp->flush();
         tfp->close();
     }
+    std::cout<< "exiting\n" ;
     exit(0);
 }
 
+void assert_with_wave(bool x){
+    if(!x){
+        if(tfp){
+            tfp->flush();
+            tfp->close();
+        }
+    }
+    assert(x);
+}
+
 #endif //TRACE_ENABLE
+
 
 void nvboard_bind_all_pins(VTOP* top);
 
@@ -34,7 +43,7 @@ int main(int argc, char** argv){
 
 #ifdef TRACE_ENABLE
     contextp->traceEverOn(true);
-    signal(SIGINT, ctrl_c_handler);
+    signal(SIGINT, exit_handler);
 #endif
     const std::unique_ptr<VTOP> top{new VTOP{contextp.get(), "TOP"}};
 
