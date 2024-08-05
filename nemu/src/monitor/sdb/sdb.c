@@ -53,9 +53,20 @@ static int cmd_q(char *args) {
   exit(0);
 }
 
-static int cmd_s(char *args) {
-  Log("Quit\n");
-  exit(0);
+static int cmd_si(char *args) {
+  long long step = 1;
+  char *arg = strtok(NULL, " ");
+  char *endptr;
+  
+  if(arg){ //There are args
+    step = strtoll(arg, &endptr,  10);
+    if(*endptr != '\0'){
+      Log("Step instrution format: si [N]\n e.g.: si or si 10\n");
+      return 0;
+    }
+  }
+  cpu_exec(step);
+  return 0;
 }
 
 static int cmd_help(char *args);
@@ -68,7 +79,7 @@ static struct {
   { "help", "Display information about all supported commands", cmd_help },
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
-  { "s", "Step", cmd_s },
+  { "si", "Step instrution", cmd_si },
 
   /* TODO: Add more commands */
 
