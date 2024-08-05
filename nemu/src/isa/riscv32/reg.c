@@ -30,7 +30,7 @@ void isa_reg_display() {
     
     word_t val = isa_reg_str2val(regs[i], &succ);
     Assert(succ, "Wrong Register Name: %s", regs[i]);
-    printf("%-10s  0x%08x        %'010u \n", regs[i], val, val);
+    printf("%-10s  0x%08x        %-10u \n", regs[i], val, val);
   }
   
 }
