@@ -80,6 +80,7 @@ static int cmd_x(char* args){
   Assert(endptr && *endptr == '\0' , "Inner error\n");
   for(int i = 0; i < n; i++){
     word_t val = vaddr_read(addr, 4);
+    addr += 4;
     printf("0x%08x ", val);
   }
   printf("\n");
