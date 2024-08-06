@@ -75,7 +75,7 @@ static int cmd_x(char* args){
   int n = strtol(n_str, &endptr, 10);
   Assert(endptr == NULL, "Inner error\n");
 
-  vaddr_t addr = strtol(addr_str, &endptr, 10);
+  vaddr_t addr = strtol(addr_str, &endptr, 16);
   Assert(endptr == NULL, "Inner error\n");
   for(int i = 0; i < n; i++){
     word_t val = vaddr_read(addr, 4);
