@@ -73,6 +73,7 @@ static int cmd_x(char* args){
   }
   char *endptr;
   int n = strtol(n_str, &endptr, 10);
+  printf("%s\n", n_str);
   Assert(endptr == NULL, "Inner error\n");
 
   vaddr_t addr = strtol(addr_str, &endptr, 16);
