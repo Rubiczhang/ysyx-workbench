@@ -58,4 +58,7 @@ LINKAGE += $(ARCHIVES)
 else
 # Include rules to build NEMU
 include $(NEMU_HOME)/scripts/native.mk
+
+test: NEMU_EXEC_ARGS = < temp/test_input.txt
+test: run
 endif
