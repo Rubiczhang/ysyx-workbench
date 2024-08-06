@@ -73,12 +73,10 @@ static int cmd_x(char* args){
   }
   char *endptr;
   int n = strtol(n_str, &endptr, 10);
-  printf("%s\n", n_str);
   Assert(endptr && *endptr == '\0' , "Inner error\n");
 
   vaddr_t addr = strtol(addr_str, &endptr, 16);
   Assert(endptr && *endptr == '\0' , "Inner error\n");
-  printf("n: %d\n", n);
   for(int i = 0; i < n; i++){
     word_t val = vaddr_read(addr, 4);
     printf("0x%08x ", val);
