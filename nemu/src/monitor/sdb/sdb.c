@@ -69,6 +69,7 @@ static int cmd_x(char* args){
   char* addr_str = strtok(NULL, " ");
   if(!(n_str && addr_str)){
     printf("Wrong usage for x cmd\n");
+    return 0;
   }
   char *endptr;
   int n = strtol(n_str, &endptr, 10);
