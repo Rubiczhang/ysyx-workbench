@@ -29,8 +29,7 @@ override ARGS += $(ARGS_DIFF)
 
 # Command to execute NEMU
 IMG ?=
-NEMU_EXEC_ARGS ?= 
-NEMU_EXEC := $(BINARY) $(ARGS) $(IMG) $(NEMU_EXEC_ARGS)
+NEMU_EXEC = $(BINARY) $(ARGS) $(IMG) $(NEMU_EXEC_ARGS)
 
 run-env: $(BINARY) $(DIFF_REF_SO)
 
