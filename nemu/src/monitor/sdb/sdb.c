@@ -17,6 +17,7 @@
 #include <cpu/cpu.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <memory/vaddr.h>
 #include "sdb.h"
 
 static int is_batch_mode = false;
@@ -63,6 +64,26 @@ static int cmd_info(char *args){
   return 0;
 }
 
+static int cmd_x(char* args){
+  char* n_str = strtok(NULL, " ");
+  char* addr_str = strtok(NULL, " ");
+  if(!(n_str && addr_str)){
+    printf("Wrong usage for x cmd\n");
+  }
+  char *endptr;
+  int n = strtol(n_str, &endptr, 10);
+  Assert(endptr == NULL, "Inner error\n");
+
+  vaddr_t addr = strtol(addr_str, &endptr, 10);
+  Assert(endptr == NULL, "Inner error\n");
+  for(int i = 0; i < n; i++){
+    word_t val = vaddr_read(addr, 4);
+    printf("0x%08x ", val);
+  }
+  printf("\n");
+  return 0;
+}
+
 static int cmd_help(char *args);
 
 static struct {
@@ -74,8 +95,8 @@ static struct {
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
   { "si", "Step instrution", cmd_si },
-  { "info",  "Generic command for showing things about the program being debugged.", cmd_info }
-
+  { "info",  "Generic command for showing things about the program being debugged.", cmd_info },
+  { "x", "Examine memory: x LENGTH ADDRESS. Output LENGHT * 32bit after ADDRESS",  cmd_x}
   /* TODO: Add more commands */
 
 };
