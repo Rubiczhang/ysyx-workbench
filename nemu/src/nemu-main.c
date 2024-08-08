@@ -13,6 +13,9 @@
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
 
+#ifdef UT
+#include "unit_test/unit_test.h"
+#endif
 #include <common.h>
 
 void init_monitor(int, char *[]);
@@ -26,6 +29,10 @@ int main(int argc, char *argv[]) {
   am_init_monitor();
 #else
   init_monitor(argc, argv);
+#endif
+
+#ifdef UT
+  expr_ut();
 #endif
 
   /* Start engine. */
