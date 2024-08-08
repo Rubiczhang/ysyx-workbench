@@ -33,6 +33,7 @@ int main(int argc, char *argv[]) {
 
 #ifdef UT
   expr_ut();
+  return 0;
 #endif
 
   /* Start engine. */
