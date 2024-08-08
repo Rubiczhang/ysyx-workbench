@@ -108,5 +108,3 @@
     ioe_write(reg, &__io_param); })
 
 #endif
-
-#define FNSH_FROM_QUIT -2

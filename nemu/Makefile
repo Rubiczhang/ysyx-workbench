@@ -12,7 +12,6 @@
 #
 # See the Mulan PSL v2 for more details.
 #**************************************************************************************/
-
 # Sanity check
 ifeq ($(wildcard $(NEMU_HOME)/src/nemu-main.c),)
   $(error NEMU_HOME=$(NEMU_HOME) is not a NEMU repo)
@@ -33,6 +32,7 @@ NAME    = $(GUEST_ISA)-nemu-$(ENGINE)
 FILELIST_MK = $(shell find -L ./src -name "filelist.mk")
 include $(FILELIST_MK)
 
+DIRS-BLACKLIST += test
 # Filter out directories and files in blacklist to obtain the final set of source files
 DIRS-BLACKLIST-y += $(DIRS-BLACKLIST)
 SRCS-BLACKLIST-y += $(SRCS-BLACKLIST) $(shell find -L $(DIRS-BLACKLIST-y) -name "*.c")
@@ -59,5 +59,13 @@ else
 # Include rules to build NEMU
 include $(NEMU_HOME)/scripts/native.mk
 
-test: NEMU_EXEC_ARGS = < temp/test_input.txt
+test: 
+  NEMU_EXEC_ARGS = < temp/test_input.txt
+
+
+TEST_TARGET ?=
+ut: SRCS-BLACKLIST-y += $(NEMU_HOME)/src/nemu-main.c
+ut: SRCS += $(NEMU_HOME)/test/$(TEST_TARGET)-main.c
+ut: run
+
 endif
