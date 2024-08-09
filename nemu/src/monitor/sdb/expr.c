@@ -41,7 +41,10 @@ static struct rule {
   {" +", TK_NOTYPE},    // spaces
   {"\\+", '+'},         // plus
   {"==", TK_EQ},        // equal
-  {"-?[0-9]+", TK_DINT},        // decimal int
+  {"[0-9]+", TK_DINT},        // decimal int
+  {"-", '-'},
+  {"\\*", '*'},
+  {"\\", '\\'},
 };
 
 #define NR_REGEX ARRLEN(rules)
