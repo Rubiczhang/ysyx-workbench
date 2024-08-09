@@ -1,6 +1,8 @@
 #include <common.h>
 
-char * test[] = {" + ==  == +   "};
+char * test[] = {" + ==  == +   ",
+                " -1100 124321 1a11"};
+
 
 void expr(char* e, bool* success);
 

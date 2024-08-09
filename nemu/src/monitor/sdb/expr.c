@@ -23,6 +23,7 @@
 enum {
   TK_NOTYPE = 256, 
   TK_EQ,
+  TK_DINT,
 
   /* TODO: Add more token types */
 
@@ -40,6 +41,7 @@ static struct rule {
   {" +", TK_NOTYPE},    // spaces
   {"\\+", '+'},         // plus
   {"==", TK_EQ},        // equal
+  {"-?[0-9]", TK_DINT},        // decimal int
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -86,8 +88,8 @@ static bool make_token(char *e) {
         char *substr_start = e + position;
         int substr_len = pmatch.rm_eo;
 
-        Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s",
-            i, rules[i].regex, position, substr_len, substr_len, substr_start);
+        // Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s",
+        //     i, rules[i].regex, position, substr_len, substr_len, substr_start);
 
         position += substr_len;
 
@@ -124,7 +126,10 @@ word_t expr(char *e, bool *success) {
     *success = false;
     return 0;
   }
-
+#ifdef UT
+  *success = true;
+  return 0;
+#endif
   /* TODO: Insert codes to evaluate the expression. */
   TODO();
 
