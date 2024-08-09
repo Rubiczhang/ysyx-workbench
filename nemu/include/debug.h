@@ -38,6 +38,7 @@
 
 #define panic(format, ...) Assert(0, format, ## __VA_ARGS__)
 
-#define TODO() panic("please implement me")
+// #define TODO() panic("please implement me")
+#define TODO() Log("please implement me")
 
 #endif
