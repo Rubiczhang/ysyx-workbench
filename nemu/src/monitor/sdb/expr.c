@@ -21,7 +21,8 @@
 #include <regex.h>
 
 enum {
-  TK_NOTYPE = 256, TK_EQ,
+  TK_NOTYPE = 256, 
+  TK_EQ,
 
   /* TODO: Add more token types */
 
@@ -79,6 +80,7 @@ static bool make_token(char *e) {
 
   while (e[position] != '\0') {
     /* Try all rules one by one. */
+    /* Only deal with the match at begining*/
     for (i = 0; i < NR_REGEX; i ++) {
       if (regexec(&re[i], e + position, 1, &pmatch, 0) == 0 && pmatch.rm_so == 0) {
         char *substr_start = e + position;
@@ -95,9 +97,14 @@ static bool make_token(char *e) {
          */
 
         switch (rules[i].token_type) {
-          default: TODO();
+          case TK_NOTYPE: //space, do nothing
+            break;
+          default:
+            strncpy(tokens[nr_token++].str, substr_start, substr_len);
+#ifdef UT
+  Log("added token: #%d: %.*s", nr_token-1, substr_len, substr_start);
+#endif
         }
-
         break;
       }
     }
