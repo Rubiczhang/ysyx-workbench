@@ -326,7 +326,7 @@ word_t expr(char *e, bool *success) {
 
 #endif
   /* TODO: Insert codes to evaluate the expression. */
-  word_t value = eval(tokens, 0, nr_token);
+  word_t value = eval(tokens, 0, nr_token-1);
   *success = true;
   return value;
 }
