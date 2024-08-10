@@ -362,11 +362,11 @@ word_t expr(char *e, bool *success) {
   if(*success)
     return value;
   else{
-    // print_tokens(tokens, 0, nr_token-1);
+    print_tokens(tokens, 0, nr_token-1);
     return 0;
   }
 
-  print_tokens(tokens, 0, nr_token-1);
+  // print_tokens(tokens, 0, nr_token-1);
   return value;
 
   // return 0;
