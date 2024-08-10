@@ -280,6 +280,7 @@ static int32_t getMainOprtr(Token* tokens, int beg, int end){
 }
 
 static word_t eval(Token* tokens, int beg, int end){
+  print_tokens(tokens, beg, end);
   word_t value = 0;
   Assert(beg <= end, "input of eval is illegal: beg:%d, end:%d\n",beg, end);
   if(beg == end){           //<number>
@@ -305,8 +306,8 @@ static word_t eval(Token* tokens, int beg, int end){
     // assert(isBinOperator(op_token));
 
     word_t rightValue = eval(tokens, mainOptrPos+1, end);
-    printf("mainOptrPos: %d  ", mainOptrPos);
-    printf("leftValue: %d, op_token: %s, rightValue:%d\n", leftValue, op_token.str, rightValue);
+    // printf("mainOptrPos: %d  ", mainOptrPos);
+    // printf("leftValue: %d, op_token: %s, rightValue:%d\n", leftValue, op_token.str, rightValue);
     
     if(mainOptrPos > beg)
       value = getBinOprValue(leftValue, op_token, rightValue);
