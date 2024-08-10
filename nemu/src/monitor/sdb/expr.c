@@ -21,9 +21,6 @@
  */
 #include <regex.h>
 
-#ifdef UT
-#define static  
-#endif
 
 enum {
   TK_NOTYPE = 256, 
