@@ -128,7 +128,7 @@ static bool make_token(char *e) {
   return true;
 }
 
-__attribute__((always_inline)) inline void print_tokens(Token* tokens, int32_t beg, int32_t end ){
+static void print_tokens(Token* tokens, int32_t beg, int32_t end ){
   Log("Illegal expression: ");
   for(int i = beg; i <= end; i++){
     printf("%s ", tokens[i].str);
@@ -361,7 +361,7 @@ word_t expr(char *e, bool *success) {
   if(*success)
     return value;
   else{
-    print_tokens(tokens, 0, nr_token-1);
+    // print_tokens(tokens, 0, nr_token-1);
     return 0;
   }
 
