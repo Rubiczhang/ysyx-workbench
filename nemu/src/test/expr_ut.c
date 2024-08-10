@@ -25,7 +25,7 @@ void expr_ut(void){
         // getMainOptr_UT(test1[i], &succ);
         word_t val = expr(test1[i], &succ);
         if(succ){
-            printf("Get value: %u\n", val);
+            printf("Get value: %d\n", val);
         }
     }
 }
