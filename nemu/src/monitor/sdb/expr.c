@@ -291,7 +291,7 @@ static int32_t getMainOprtr(Token* tokens, int beg, int end){
         if(prcdcOprtr(tokens[i], isSingle) <= mainOptrPrcdc){
           mainOprtPos = i;
           mainOptrPrcdc = prcdcOprtr(tokens[i], isSingle);
-        } else if(prcdcOprtr(tokens[i], isSingle)){
+        } else if(prcdcOprtr(tokens[i], isSingle) == 0xffff){
             return -1;
         }
       }
