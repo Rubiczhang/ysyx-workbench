@@ -128,14 +128,12 @@ static bool make_token(char *e) {
   return true;
 }
 
-
-static inline void print_tokens(Token* tokens, int32_t beg, int32_t end ){
+static __attribute__((always_inline)) inline void print_tokens(Token* tokens, int32_t beg, int32_t end ){
   Log("Illegal expression: ");
   for(int i = beg; i <= end; i++){
     printf("%s ", tokens[i].str);
   }
-  printf("\n");
-  printf("beg: %d end: %d\n", beg, end);
+  printf("\nbeg: %d end: %d\n",beg, end);
 }
 
 static int32_t getEndOfParnth(Token* tokens, int beg, int end){
