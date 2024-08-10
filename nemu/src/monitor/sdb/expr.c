@@ -291,9 +291,9 @@ static word_t eval(Token* tokens, int beg, int end){
   }
   else{
     int32_t mainOptrPos = getMainOprtr(tokens, beg, end);
-    Log("mainPtrPos: %d\n", mainOptrPos);
-    if(mainOptrPos >= end){
+    if(mainOptrPos < 0 || mainOptrPos >= end){
       print_tokens(tokens, beg, end);
+      assert(0);
       return value;
     }
     
