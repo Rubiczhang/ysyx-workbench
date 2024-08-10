@@ -267,6 +267,7 @@ static int32_t getMainOprtr(Token* tokens, int beg, int end){
         mainOprtPos = i;
       }
     }
+    i++;
   }
 
   return mainOprtPos;
