@@ -261,8 +261,9 @@ static int32_t prcdcOprtr(Token op_tk,  bool isSigOpr){
     }
   }
 
-  Assert(0, "Inner Error: get precendence of token: %s\n", op_tk.str);
   return 0xffff;
+  // Assert(0, "Inner Error: get precendence of token: %s\n", op_tk.str);
+  // return 0xffff;
 }
 
 static int32_t getMainOprtr(Token* tokens, int beg, int end){
