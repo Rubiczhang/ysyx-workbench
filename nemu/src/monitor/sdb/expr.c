@@ -115,9 +115,8 @@ static bool make_token(char *e) {
           case TK_NOTYPE: //space, do nothing
             break;
           default:
-            strncpy(tokens[nr_token].str, substr_start, substr_len);
+            strncpy(tokens[nr_token].str, substr_start, substr_len<32?substr_len: 31);
             tokens[nr_token++].type = rules[i].token_type;
-
         }
         break;
       }
@@ -307,33 +306,35 @@ static int32_t getMainOprtr(Token* tokens, int beg, int end){
   
 }
 
-static word_t eval(Token* tokens, int beg, int end){
+static word_t eval(Token* tokens, int beg, int end, bool* success){
   // print_tokens(tokens, beg, end);
   word_t value = 0;
   Assert(beg <= end, "input of eval is illegal: beg:%d, end:%d\n",beg, end);
   if(beg == end){           //<number>
-    assert(tokens[beg].type == TK_DINT);
+    if(tokens[beg].type != TK_DINT)
+      *success = false;
     value = strtol(tokens[beg].str, NULL, 10);
   }
   else if(tokens[beg].type == '(' && (getEndOfParnth(tokens, beg, end) == end)){
     // '(' <expr> ')'
-    value = eval(tokens, beg+1, end-1);
+    value = eval(tokens, beg+1, end-1, success);
   }
   else{
     int32_t mainOptrPos = getMainOprtr(tokens, beg, end);
     if(mainOptrPos < 0 || mainOptrPos >= end){
       print_tokens(tokens, beg, end);
-      assert(0);
-      return value;
+      // assert(0);
+      *success = false;
+      return 0;
     }
     
     word_t leftValue = 0;
     if(mainOptrPos > beg)
-      leftValue = eval(tokens, beg, mainOptrPos-1);
+      leftValue = eval(tokens, beg, mainOptrPos-1, success);
     Token op_token = tokens[mainOptrPos];
     // assert(isBinOperator(op_token));
 
-    word_t rightValue = eval(tokens, mainOptrPos+1, end);
+    word_t rightValue = eval(tokens, mainOptrPos+1, end, success);
     // printf("mainOptrPos: %d  ", mainOptrPos);
     // printf("leftValue: %d, op_token: %s, rightValue:%d\n", leftValue, op_token.str, rightValue);
     
@@ -352,11 +353,8 @@ word_t expr(char *e, bool *success) {
     *success = false;
     return 0;
   }
-#ifdef UT
-
-#endif
   /* TODO: Insert codes to evaluate the expression. */
-  word_t value = eval(tokens, 0, nr_token-1);
+  word_t value = eval(tokens, 0, nr_token-1, success);
   *success = true;
   return value;
 }

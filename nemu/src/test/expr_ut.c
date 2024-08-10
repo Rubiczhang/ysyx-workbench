@@ -25,9 +25,9 @@ bool make_token(char *e) ;
 
 void expr_ut(void){
     bool succ;
-    for(int i = 0; i < sizeof(test1)/sizeof(char*); i++){
+    for(int i = 0; i < sizeof(test)/sizeof(char*); i++){
         // getMainOptr_UT(test1[i], &succ);
-        word_t val = expr(test1[i], &succ);
+        word_t val = expr(test[i], &succ);
         if(succ){
             printf("Get value: %d\n", val);
         }
