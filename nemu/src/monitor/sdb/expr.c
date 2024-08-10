@@ -178,6 +178,8 @@ static int32_t getEndOfParnth(Token* tokens, int beg, int end){
 
 static bool isBinOperator(Token token){
   bool res = false;
+  print_tokens(&token, 0, 0);
+  printf("%d\n", token.type);
   switch(token.type){
     case '+':
     case '-':
@@ -265,7 +267,6 @@ static int32_t getMainOprtr(Token* tokens, int beg, int end){
       continue;
     }
     if(isBinOperator(tokens[i]) || isSingleOperator(tokens[i])){
-      Log("prcdcOprtr(tokens[i]):%d\n", prcdcOprtr(tokens[i]) );
       if(prcdcOprtr(tokens[i]) <= mainOptrPrcdc){
         mainOprtPos = i;
       }
