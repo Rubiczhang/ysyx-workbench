@@ -115,7 +115,9 @@ static bool make_token(char *e) {
           case TK_NOTYPE: //space, do nothing
             break;
           default:
-            strncpy(tokens[nr_token++].str, substr_start, substr_len);
+            strncpy(tokens[nr_token].str, substr_start, substr_len);
+            tokens[nr_token++].type = rules[i].token_type;
+
         }
         break;
       }
@@ -177,7 +179,7 @@ static int32_t getEndOfParnth(Token* tokens, int beg, int end){
 static bool isBinOperator(Token token){
   bool res = false;
   print_tokens(&token, 0, 0);
-  printf("%d", token.type);
+  printf("%d\n", token.type);
   switch(token.type){
     case '+':
     case '-':
