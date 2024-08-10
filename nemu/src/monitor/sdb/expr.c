@@ -357,16 +357,18 @@ word_t expr(char *e, bool *success) {
 
   print_tokens(tokens, 0, nr_token-1);
   // /* TODO: Insert codes to evaluate the expression. */
-  word_t value = eval(tokens, 0, nr_token-1, success);
-  if(*success)
-    return value;
-  else{
-    // print_tokens(tokens, 0, nr_token-1);
-    return 0;
-  }
+  // word_t value = eval(tokens, 0, nr_token-1, success);
+  // if(*success)
+  //   return value;
+  // else{
+  //   // print_tokens(tokens, 0, nr_token-1);
+  //   return 0;
+  // }
 
   // print_tokens(tokens, 0, nr_token-1);
-  return value;
+  // return value;
+
+  return 0;
   
 }
 
