@@ -139,6 +139,7 @@ static void print_tokens(Token* tokens, int32_t beg, int32_t end ){
     printf("%s ", tokens[i].str);
   }
   printf("\n");
+  printf("beg: %d end: %d\n", beg, end);
 }
 
 static int32_t getEndOfParnth(Token* tokens, int beg, int end){
