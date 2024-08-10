@@ -116,9 +116,6 @@ static bool make_token(char *e) {
             break;
           default:
             strncpy(tokens[nr_token++].str, substr_start, substr_len);
-          #ifdef UT
-            Log("added token: #%d: %.*s", nr_token-1, substr_len, substr_start);
-          #endif
         }
         break;
       }
@@ -136,7 +133,7 @@ static bool make_token(char *e) {
 
 static void print_tokens(Token* tokens, int32_t beg, int32_t end ){
   Log("Illegal expression: ");
-  for(int i = beg; i < end; i++){
+  for(int i = beg; i <= end; i++){
     printf("%s ", tokens[i].str);
   }
   printf("\n");
@@ -259,7 +256,7 @@ static int32_t prcdcOprtr(Token op_tk){
 static int32_t getMainOprtr(Token* tokens, int beg, int end){
   int32_t mainOprtPos = -1;
   int32_t mainOptrPrcdc = 0xffff;
-  for(int i = beg; i < end; ){
+  for(int i = beg; i <= end; ){
     if(tokens[i].type == '(' ){
       i = getEndOfParnth(tokens, i, end);
       if(i == -1)
