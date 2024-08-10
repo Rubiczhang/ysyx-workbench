@@ -22,6 +22,7 @@ void expr_ut(void){
     bool succ;
     for(int i = 0; i < sizeof(test1)/sizeof(char*); i++){
         getMainOptr_UT(test1[i], &succ);
+        expr(test1[i], &succ);
         if(succ){
             printf("Passed expr: %s\n", test[i]);
         }
