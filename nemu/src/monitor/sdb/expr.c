@@ -177,6 +177,7 @@ static int32_t getEndOfParnth(Token* tokens, int beg, int end){
 static bool isBinOperator(Token token){
   bool res = false;
   print_tokens(&token, 0, 0);
+  printf("%d", token.type);
   switch(token.type){
     case '+':
     case '-':
