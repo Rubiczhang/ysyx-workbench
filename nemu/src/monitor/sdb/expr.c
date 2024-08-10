@@ -325,7 +325,7 @@ static word_t eval(Token* tokens, int beg, int end, bool* success){
     if(mainOptrPos < 0 || mainOptrPos >= end){
       // print_tokens(tokens, beg, end);
       
-      assert(0);
+      // assert(0);
       *success = false;
       return 0;
     }
@@ -358,7 +358,7 @@ word_t expr(char *e, bool *success) {
   *success = true;
   // /* TODO: Insert codes to evaluate the expression. */
   word_t value = eval(tokens, 0, nr_token-1, success);
-  if(success)
+  if(*success)
     return value;
   else{
     print_tokens(tokens, 0, nr_token-1);
