@@ -286,6 +286,8 @@ static int32_t getMainOprtr(Token* tokens, int beg, int end){
     else {
       
       if(isBinOperator(tokens[i]) || isSingleOperator(tokens[i])){
+        printf("i: %d, tokens[i].str: %s, isLastNonSpaceTkEndOfExpr: %d\n", 
+                i, tokens[i].str, isLastNonSpaceTkEndOfExpr);
         bool isSingle = !isLastNonSpaceTkEndOfExpr;
         if(prcdcOprtr(tokens[i], isSingle) <= mainOptrPrcdc){
           mainOprtPos = i;
@@ -298,6 +300,7 @@ static int32_t getMainOprtr(Token* tokens, int beg, int end){
   }
   print_tokens(tokens, beg, end);
   printf("mainOprtPos: %d\n", mainOprtPos);
+  
 
   return mainOprtPos;
   
