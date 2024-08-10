@@ -279,7 +279,6 @@ static int32_t getMainOprtr(Token* tokens, int beg, int end){
       isLastNonSpaceTkEndOfExpr = true; // last is ')'
       if(i == -1)
         print_tokens(tokens, beg, end);
-      continue;
     } else if(tokens[i].type == TK_DINT){
       isLastNonSpaceTkEndOfExpr = true; // last is ')'
     } else if(tokens[i].type == TK_NOTYPE){
