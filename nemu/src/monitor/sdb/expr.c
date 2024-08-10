@@ -268,6 +268,7 @@ static int32_t getMainOprtr(Token* tokens, int beg, int end){
       continue;
     }
     if(isBinOperator(tokens[i]) || isSingleOperator(tokens[i])){
+      printf("tokens: %s, prcdcOprtr(tokens[i]):%d\n ",tokens[i].str, prcdcOprtr(tokens[i]) );
       if(prcdcOprtr(tokens[i]) <= mainOptrPrcdc){
         mainOprtPos = i;
       }
