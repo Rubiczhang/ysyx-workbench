@@ -253,7 +253,6 @@ static int32_t prcdcOprtr(Token op_tk){
 }
 
 static int32_t getMainOprtr(Token* tokens, int beg, int end){
-  print_tokens(tokens, beg, end);
   int32_t mainOprtPos = -1;
   int32_t mainOptrPrcdc = 0xffff;
   for(int i = beg; i < end; ){
