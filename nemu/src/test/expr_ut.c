@@ -21,10 +21,10 @@ bool make_token(char *e) ;
 void expr_ut(void){
     bool succ;
     for(int i = 0; i < sizeof(test1)/sizeof(char*); i++){
-        getMainOptr_UT(test1[i], &succ);
-        expr(test1[i], &succ);
+        // getMainOptr_UT(test1[i], &succ);
+        word_t val = expr(test1[i], &succ);
         if(succ){
-            printf("Passed expr: %s\n", test[i]);
+            printf("Get value: %u\n", val);
         }
     }
 }
