@@ -270,6 +270,8 @@ static int32_t prcdcOprtr(Token op_tk,  bool isSigOpr){
 static int32_t getMainOprtr(Token* tokens, int beg, int end){
   int32_t mainOprtPos = -1;
   int32_t mainOptrPrcdc = 0xffff;
+  printf("----begin---------------\n");
+  print_tokens(tokens, beg, end);
   bool isLastNonSpaceTkEndOfExpr = true;
   for(int i = beg; i <= end; ){
     if(tokens[i].type == '(' ){
@@ -298,9 +300,9 @@ static int32_t getMainOprtr(Token* tokens, int beg, int end){
     }
     i++;
   }
-  print_tokens(tokens, beg, end);
   printf("mainOprtPos: %d\n", mainOprtPos);
   
+  printf("----end---------------\n");
 
   return mainOprtPos;
   
