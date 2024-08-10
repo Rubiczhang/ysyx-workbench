@@ -298,7 +298,7 @@ static word_t eval(Token* tokens, int beg, int end){
       return value;
     }
     
-    word_t leftValue;
+    word_t leftValue = 0;
     if(mainOptrPos > beg)
       leftValue = eval(tokens, beg, mainOptrPos-1);
 
@@ -306,6 +306,7 @@ static word_t eval(Token* tokens, int beg, int end){
     // assert(isBinOperator(op_token));
 
     word_t rightValue = eval(tokens, mainOptrPos+1, end);
+    printf("leftValue: %d, op_token: %s, rightValue:%d\n", leftValue, op_token.str, rightValue);
     
     if(mainOptrPos > beg)
       value = getBinOprValue(leftValue, op_token, rightValue);
