@@ -112,7 +112,7 @@ static bool make_token(char *e) {
           case TK_NOTYPE: //space, do nothing
             break;
           default:
-            strncpy(tokens[nr_token].str, substr_start, substr_len<32?substr_len: 31);
+            strncpy(tokens[nr_token].str, substr_start, substr_len<32 ?substr_len: 31);
             tokens[nr_token++].type = rules[i].token_type;
         }
         break;
