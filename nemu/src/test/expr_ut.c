@@ -8,8 +8,8 @@ char * test[] = {" + ==  == +   ",
                 };
 
 char *test1[] = {
-            // "1+2*3-5",//2
-            // "-1+2*3-5",//2
+            "1+2*3-5",//2
+            "-1+2*3-5",//2
             "(-1   + 2)- 3    -5",//-7
             "(-1+2)*3-5",//-2
             "-(-1+2)*3-5",//-8
@@ -31,5 +31,12 @@ void expr_ut(void){
         if(succ){
             printf("Get value: %d\n", val);
         }
+    }
+    for(int i = 0; i < sizeof(test1)/sizeof(char*); i++){
+            // getMainOptr_UT(test1[i], &succ);
+            word_t val = expr(test1[i], &succ);
+            if(succ){
+                printf("Get value: %d\n", val);
+            }
     }
 }
