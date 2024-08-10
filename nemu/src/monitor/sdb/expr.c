@@ -240,7 +240,7 @@ static word_t  getSigOprValue(Token op_tk, word_t oprnd_val){
 }
 
 static int32_t prcdcOprtr(Token op_tk,  bool isSigOpr){
-  // assert(isBinOperator(op_tk) || isSingleOperator(op_tk));
+  assert(isBinOperator(op_tk) || isSingleOperator(op_tk));
   if(!isSigOpr){
     assert(isBinOperator(op_tk));
     switch(op_tk.type){
