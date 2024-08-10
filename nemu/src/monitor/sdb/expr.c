@@ -243,16 +243,24 @@ static word_t  getSigOprValue(Token op_tk, word_t oprnd_val){
   return val;
 }
 
-static int32_t prcdcOprtr(Token op_tk){
+static int32_t prcdcOprtr(Token op_tk, int32_t bin_or_sig){
   assert(isBinOperator(op_tk) | isSingleOperator(op_tk));
-  switch(op_tk.type){
-    case '+':
-    case '-':   //same precedence for sub and neg Operator
-      return 1;
-    case '*':   //same precedence for ptr and mul Operator
-    case '/':
-      return 2;
+  if(bin_or_sig == 2){
+    switch(op_tk.type){
+      case '+':
+      case '-':  
+        return 1;
+      case '*':  
+      case '/':
+        return 2;
+    }
+  } else if(bin_or_sig == 1){
+    switch(op_tk.type){
+      case '-':
+        return 5;
+    }
   }
+
   Assert(0, "Inner Error: get precendence of token: %s\n", op_tk.str);
   return 0xffff;
 }
@@ -260,18 +268,27 @@ static int32_t prcdcOprtr(Token op_tk){
 static int32_t getMainOprtr(Token* tokens, int beg, int end){
   int32_t mainOprtPos = -1;
   int32_t mainOptrPrcdc = 0xffff;
+  bool isLastNonSpaceTkEndOfExpr = true;
   for(int i = beg; i <= end; ){
     if(tokens[i].type == '(' ){
       i = getEndOfParnth(tokens, i, end);
+      isLastNonSpaceTkEndOfExpr = true; // last is ')'
       if(i == -1)
         print_tokens(tokens, beg, end);
       continue;
-    }
-    if(isBinOperator(tokens[i]) || isSingleOperator(tokens[i])){
-      if(prcdcOprtr(tokens[i]) <= mainOptrPrcdc){
-        mainOprtPos = i;
-        mainOptrPrcdc = prcdcOprtr(tokens[i]);
+    } else if(tokens[i].type == TK_DINT){
+      isLastNonSpaceTkEndOfExpr = true; // last is ')'
+    } else if(tokens[i].type == TK_NOTYPE){
+      ;
+    } 
+    else {
+      if(isBinOperator(tokens[i]) || isSingleOperator(tokens[i])){
+        if(prcdcOprtr(tokens[i], !isLastNonSpaceTkEndOfExpr) <= mainOptrPrcdc){
+          mainOprtPos = i;
+          mainOptrPrcdc = prcdcOprtr(tokens[i], !isLastNonSpaceTkEndOfExpr);
+        }
       }
+      isLastNonSpaceTkEndOfExpr = false;
     }
     i++;
   }
