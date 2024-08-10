@@ -21,6 +21,9 @@
  */
 #include <regex.h>
 
+#ifdef UT
+#define static  
+#endif
 
 enum {
   TK_NOTYPE = 256, 
@@ -311,13 +314,29 @@ static word_t eval(Token* tokens, int beg, int end){
 
 }
 
+
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
     *success = false;
     return 0;
   }
+#ifdef UT
+
+#endif
   /* TODO: Insert codes to evaluate the expression. */
   word_t value = eval(tokens, 0, nr_token);
   *success = true;
   return value;
+}
+
+
+word_t getMainOptr_UT(char *e, bool *success) {
+  if (!make_token(e)) {
+    *success = false;
+    return 0;
+  }
+  /* TODO: Insert codes to evaluate the expression. */
+  int32_t pos = getMainOprtr(tokens, 0, nr_token);
+  printf("%d\n",pos);
+  return 0;
 }

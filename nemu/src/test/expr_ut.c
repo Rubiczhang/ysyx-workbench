@@ -14,10 +14,14 @@ char *test1[] = {
 
 word_t expr(char* e, bool* success);
 
+word_t getMainOptr_UT(char *e, bool *success);
+bool make_token(char *e) ;
+
+
 void expr_ut(void){
     bool succ;
-    for(int i = 0; i < sizeof(test)/sizeof(char*); i++){
-        expr(test1[i], &succ);
+    for(int i = 0; i < sizeof(test1)/sizeof(char*); i++){
+        getMainOptr_UT(test1[i], &succ);
         if(succ){
             printf("Passed expr: %s\n", test[i]);
         }
