@@ -284,10 +284,12 @@ static int32_t getMainOprtr(Token* tokens, int beg, int end){
       ;
     } 
     else {
+      
       if(isBinOperator(tokens[i]) || isSingleOperator(tokens[i])){
-        if(prcdcOprtr(tokens[i], !isLastNonSpaceTkEndOfExpr) <= mainOptrPrcdc){
+        bool isSingle = !isLastNonSpaceTkEndOfExpr;
+        if(prcdcOprtr(tokens[i], isSingle) <= mainOptrPrcdc){
           mainOprtPos = i;
-          mainOptrPrcdc = prcdcOprtr(tokens[i], !isLastNonSpaceTkEndOfExpr);
+          mainOptrPrcdc = prcdcOprtr(tokens[i], isSingle);
         }
       }
       isLastNonSpaceTkEndOfExpr = false;
