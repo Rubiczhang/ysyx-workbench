@@ -281,7 +281,7 @@ static int32_t getMainOprtr(Token* tokens, int beg, int end){
 }
 
 static word_t eval(Token* tokens, int beg, int end){
-  print_tokens(tokens, beg, end);
+  // print_tokens(tokens, beg, end);
   word_t value = 0;
   Assert(beg <= end, "input of eval is illegal: beg:%d, end:%d\n",beg, end);
   if(beg == end){           //<number>
