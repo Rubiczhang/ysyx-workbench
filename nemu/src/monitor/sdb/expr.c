@@ -144,7 +144,7 @@ static void print_tokens(Token* tokens, int32_t beg, int32_t end ){
 
 static int32_t getEndOfParnth(Token* tokens, int beg, int end){
   assert(tokens[beg].type == '(');
-  int cnt_left_prntth = 1;
+  int cnt_left_prntth = 0;
   int i = 0;
   for(i = beg; i <= end; i++){
     if(tokens[i].type == '(')
