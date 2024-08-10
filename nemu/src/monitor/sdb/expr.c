@@ -129,7 +129,7 @@ static bool make_token(char *e) {
 }
 
 
-static inline void print_tokens(Token* tokens, int32_t beg, int32_t end ){
+static void print_tokens(Token* tokens, int32_t beg, int32_t end ){
   Log("Illegal expression: ");
   for(int i = beg; i <= end; i++){
     printf("%s ", tokens[i].str);
