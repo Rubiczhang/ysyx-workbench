@@ -243,9 +243,10 @@ static word_t  getSigOprValue(Token op_tk, word_t oprnd_val){
   return val;
 }
 
-static int32_t prcdcOprtr(Token op_tk, int32_t bin_or_sig){
-  assert(isBinOperator(op_tk) | isSingleOperator(op_tk));
-  if(bin_or_sig == 2){
+static int32_t prcdcOprtr(Token op_tk,  bool isSigOpr){
+  // assert(isBinOperator(op_tk) || isSingleOperator(op_tk));
+  if(!isSigOpr){
+    assert(isBinOperator(op_tk));
     switch(op_tk.type){
       case '+':
       case '-':  
@@ -254,7 +255,8 @@ static int32_t prcdcOprtr(Token op_tk, int32_t bin_or_sig){
       case '/':
         return 2;
     }
-  } else if(bin_or_sig == 1){
+  } else{
+    assert(isSingleOperator(op_tk));
     switch(op_tk.type){
       case '-':
         return 5;
