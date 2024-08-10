@@ -301,11 +301,11 @@ static word_t eval(Token* tokens, int beg, int end){
     word_t leftValue = 0;
     if(mainOptrPos > beg)
       leftValue = eval(tokens, beg, mainOptrPos-1);
-    printf("mainOptrPos: %d  ", mainOptrPos);
     Token op_token = tokens[mainOptrPos];
     // assert(isBinOperator(op_token));
 
     word_t rightValue = eval(tokens, mainOptrPos+1, end);
+    printf("mainOptrPos: %d  ", mainOptrPos);
     printf("leftValue: %d, op_token: %s, rightValue:%d\n", leftValue, op_token.str, rightValue);
     
     if(mainOptrPos > beg)
