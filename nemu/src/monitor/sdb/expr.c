@@ -254,8 +254,7 @@ static int32_t prcdcOprtr(Token op_tk,  bool isSigOpr){
       case '/':
         return 2;
     }
-  } else{
-    assert(isSingleOperator(op_tk));
+  } else if(isSingleOperator(op_tk)){
     switch(op_tk.type){
       case '-':
         return 5;
@@ -267,6 +266,8 @@ static int32_t prcdcOprtr(Token op_tk,  bool isSigOpr){
 }
 
 static int32_t getMainOprtr(Token* tokens, int beg, int end){
+// return mainOprtPos if expression is leagle
+// return -1 if expression is illeagle
   int32_t mainOprtPos = -1;
   int32_t mainOptrPrcdc = 0xffff;
   // printf("----begin---------------\n");
@@ -292,6 +293,8 @@ static int32_t getMainOprtr(Token* tokens, int beg, int end){
         if(prcdcOprtr(tokens[i], isSingle) <= mainOptrPrcdc){
           mainOprtPos = i;
           mainOptrPrcdc = prcdcOprtr(tokens[i], isSingle);
+        } else if(prcdcOprtr(tokens[i], isSingle)){
+            return -1;
         }
       }
       isLastNonSpaceTkEndOfExpr = false;
