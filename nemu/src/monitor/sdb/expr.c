@@ -225,7 +225,7 @@ static word_t getBinOprValue(word_t first, Token op_tk, word_t last){
 
 static word_t  getSigOprValue(Token op_tk, word_t oprnd_val){
   assert(isSingleOperator(op_tk));
-  word_t val;
+  word_t val = 0;
   
   switch(op_tk.type){
     case '-':
@@ -274,9 +274,8 @@ static int32_t getMainOprtr(Token* tokens, int beg, int end){
 }
 
 static word_t eval(Token* tokens, int beg, int end){
-  word_t value = 1;
+  word_t value = 0;
   Assert(beg <= end, "input of eval is illegal: beg:%d, end:%d\n",beg, end);
-  return value;
   if(beg == end){           //<number>
     assert(tokens[beg].type == TK_DINT);
     value = strtol(tokens[beg].str, NULL, 10);
@@ -316,6 +315,5 @@ word_t expr(char *e, bool *success) {
     return 0;
   }
   /* TODO: Insert codes to evaluate the expression. */
-  eval(tokens, 0, nr_token);
-  return 0;
+  return eval(tokens, 0, nr_token);
 }
