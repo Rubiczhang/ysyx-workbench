@@ -112,10 +112,6 @@ static bool make_token(char *e) {
 
         position += substr_len;
 
-        /* TODO: Now a new token is recognized with rules[i]. Add codes
-         * to record the token in the array `tokens'. For certain types
-         * of tokens, some extra actions should be performed.
-         */
 
         switch (rules[i].token_type) {
           case TK_NOTYPE: //space, do nothing
@@ -257,7 +253,6 @@ static word_t  getSigOprValue(Token op_tk, word_t oprnd_val){
 static int32_t prcdcOprtr(Token op_tk,  bool isSigOpr){
   assert(isBinOperator(op_tk) || isSingleOperator(op_tk));
   // Lower is more precendency
-  //TODO 65536
   if(!isSigOpr){
     assert(isBinOperator(op_tk));
     switch(op_tk.type){
@@ -289,6 +284,7 @@ static int32_t getMainOprtr(Token* tokens, int beg, int end){
 // return -1 if expression is illeagle
   int32_t mainOprtPos = -1;
   int32_t mainOptrPrcdc = -1;
+  bool mainOptrSig = false;
   // printf("----begin---------------\n");
   // print_tokens(tokens, beg, end);
   bool isLastNonSpaceTkEndOfExpr = false;
@@ -296,10 +292,12 @@ static int32_t getMainOprtr(Token* tokens, int beg, int end){
     if(tokens[i].type == '(' ){
       i = getEndOfParnth(tokens, i, end);
       isLastNonSpaceTkEndOfExpr = true; // last is ')'
-      if(i == -1)
+      if(i == -1){
         print_tokens(tokens, beg, end);
+        return i;
+      }
     } else if(tokens[i].type == TK_DINT){
-      isLastNonSpaceTkEndOfExpr = true; // last is ')'
+      isLastNonSpaceTkEndOfExpr = true; // last is decimal int
     } else if(tokens[i].type == TK_NOTYPE){
       ;
     } 
@@ -309,9 +307,11 @@ static int32_t getMainOprtr(Token* tokens, int beg, int end){
         // printf("i: %d, tokens[i].str: %s, isLastNonSpaceTkEndOfExpr: %d\n", 
                 // i, tokens[i].str, isLastNonSpaceTkEndOfExpr);
         bool isSingle = !isLastNonSpaceTkEndOfExpr;
-        if(prcdcOprtr(tokens[i], isSingle) >= mainOptrPrcdc ){
+        //TODO: Specific for signle Operators
+        if(prcdcOprtr(tokens[i], isSingle) >= mainOptrPrcdc && !mainOptrSig ){
           mainOprtPos = i;
           mainOptrPrcdc = prcdcOprtr(tokens[i], isSingle);
+          mainOptrSig = isSingle;
         } else if(prcdcOprtr(tokens[i], isSingle) == -1){
             return -1;
         }
@@ -402,7 +402,6 @@ word_t expr(char *e, bool *success) {
 //     *success = false;
 //     return 0;
 //   }
-//   /* TODO: Insert codes to evaluate the expression. */
 //   int32_t pos = getMainOprtr(tokens, 0, nr_token);
 //   printf("%d\n",pos);
 //   return 0;
