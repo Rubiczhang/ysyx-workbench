@@ -21,9 +21,11 @@
 #include <string.h>
 
 // this should be enough
-static char buf[65536] = {};
-static char code_buf[65536 + 128] = {}; // a little larger than `buf`
-static int buf_len = 0;
+static char output_buf[65536] = {};
+static char cal_buf[65536] = {};
+static char code_buf[65536 + 128] = {}; // a little larger than `output_buf`
+static int out_buf_len = 0;
+static int cal_buf_len = 0;
 static char *code_format =
 "#include <stdio.h>\n"
 "int main() { "
@@ -45,13 +47,17 @@ static int32_t  nr_sig_oprator = sizeof(sig_oprator)/sizeof(char*);
 
 void gen_num(){
   int32_t r = rand();
-  sprintf(buf+buf_len, "%u", r);
-  buf_len = strlen(buf);
+  sprintf(output_buf+out_buf_len, "%u", r);
+  sprintf(cal_buf+cal_buf_len, "%uu", r);
+  out_buf_len = strlen(output_buf);
+  cal_buf_len = strlen(cal_buf);
 }
 
 void gen_str(const char* str){
-  sprintf(buf+buf_len, "%s", str);
-  buf_len+= strlen(str);
+  sprintf(output_buf+out_buf_len, "%s", str);
+  out_buf_len+= strlen(str);
+  sprintf(cal_buf+cal_buf_len, "%s", str);
+  cal_buf_len+= strlen(str);
 }
 
 void gen_bin_oprator(){
@@ -107,10 +113,11 @@ int main(int argc, char *argv[]) {
   }
   int i;
   for (i = 0; i < loop; i ++) {
-    buf_len = 0;
+    out_buf_len = 0;
+    cal_buf_len = 0;
     gen_rand_expr(0);
 
-    sprintf(code_buf, code_format, buf);
+    sprintf(code_buf, code_format, cal_buf);
 
     FILE *fp = fopen("/tmp/.code.c", "w");
     assert(fp != NULL);
@@ -127,7 +134,7 @@ int main(int argc, char *argv[]) {
     ret = fscanf(fp, "%d", &result);
     pclose(fp);
 
-    printf("%u %s\n", result, buf);
+    printf("%u %s\n", result, output_buf);
   }
   return 0;
 }
