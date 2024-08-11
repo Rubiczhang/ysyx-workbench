@@ -46,8 +46,8 @@ void expr_ut(void){
         if(!fgets(buff, MAX_BUF_SIZE-1, stdin)){
             Log("Wrong input");
         }
-        assert(buff[strlen(buff)-2] == '\n');
-        buff[strlen(buff)-2] = '\0';
+        assert(buff[strlen(buff)-1] == '\n');
+        buff[strlen(buff)-1] = '\0';
         sscanf(buff, "%s", ans_buf);
         word_t ans = strtol(ans_buf, NULL, 10);
         bool success = false;
