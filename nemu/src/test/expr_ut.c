@@ -25,7 +25,7 @@ word_t expr(char* e, bool* success);
 word_t getMainOptr_UT(char *e, bool *success);
 bool make_token(char *e) ;
 
-#define MAX_BUF_SIZE 65536
+#define MAX_BUF_SIZE 262104
 static char buff[MAX_BUF_SIZE];
 static char ans_buf[32];
 
@@ -50,6 +50,7 @@ void expr_ut(void){
         if(!fgets(buff, MAX_BUF_SIZE-1, stdin)){
             Log("Wrong input");
         }
+        Log("%s", buff);
         assert(buff[strlen(buff)-1] == '\n');
         buff[strlen(buff)-1] = '\0';
         sscanf(buff, "%s", ans_buf);
