@@ -52,6 +52,7 @@ void expr_ut(void){
             Log("Wrong input");
         }
         Log("%s", buff);
+        printf("%d", buff[strlen(buff)-1]);
         assert(buff[strlen(buff)-1] == '\n' || buff[strlen(buff)-1] == EOF);
         buff[strlen(buff)-1] = '\0';
         sscanf(buff, "%s", ans_buf);
