@@ -248,7 +248,7 @@ static word_t  getSigOprValue(Token op_tk, word_t oprnd_val){
       val = vaddr_read(oprnd_val, 4);
       break;
   }
-  printf("%s %u = %u\n", op_tk.str, oprnd_val, val);
+  // printf("%s %u = %u\n", op_tk.str, oprnd_val, val);
   return val;
 }
 
