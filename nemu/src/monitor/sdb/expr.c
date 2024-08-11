@@ -333,8 +333,10 @@ static word_t eval(Token* tokens, int beg, int end, bool* success){
   word_t value = 0;
   Assert(beg <= end, "input of eval is illegal: beg:%d, end:%d\n",beg, end);
   if(beg == end){           //<number>
-    if(tokens[beg].type != TK_DINT)
+    if(tokens[beg].type != TK_DINT){
+      assert(0);
       *success = false;
+    }
     value = strtol(tokens[beg].str, NULL, 10);
   }
   else if(tokens[beg].type == '(' && (getEndOfParnth(tokens, beg, end) == end)){
