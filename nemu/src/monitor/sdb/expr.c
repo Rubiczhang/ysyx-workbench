@@ -232,7 +232,7 @@ static word_t getBinOprValue(word_t first, Token op_tk, word_t last){
       val = (first == last);
       break;
   }
-  printf("%u %s %u = %u",first, op_tk.str, last, val);
+  printf("%u %s %u = %u\n",first, op_tk.str, last, val);
   return val;
 }
 
