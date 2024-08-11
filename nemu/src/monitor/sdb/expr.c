@@ -20,6 +20,7 @@
  * Type 'man regex' for more information about POSIX regex functions.
  */
 #include <regex.h>
+#include <memory/vaddr.h>
 
 
 enum {
@@ -246,23 +247,25 @@ static word_t  getSigOprValue(Token op_tk, word_t oprnd_val){
     case '-':
       val = - oprnd_val;
       break;
-    // case '*':
-    //   val = *(word_t*)oprnd_val;
-    //   break;
+    case '*':
+      val = vaddr_read(oprnd_val, 4);
+      break;
   }
   return val;
 }
 
 static int32_t prcdcOprtr(Token op_tk,  bool isSigOpr){
-  // assert(isBinOperator(op_tk) || isSingleOperator(op_tk));
+  assert(isBinOperator(op_tk) || isSingleOperator(op_tk));
+  // Lower is more precendency
+  //TODO 65536
   if(!isSigOpr){
     assert(isBinOperator(op_tk));
     switch(op_tk.type){
       case TK_EQ:
-        return 1;
+        return 7;
       case '+':
       case '-':  
-        return 2;
+        return 4;
       case '*':  
       case '/':
         return 3;
@@ -270,11 +273,13 @@ static int32_t prcdcOprtr(Token op_tk,  bool isSigOpr){
   } else if(isSingleOperator(op_tk)){
     switch(op_tk.type){
       case '-':
-        return 6;
+        return 1;
+      case '*':
+        return 1;
     }
   }
 
-  return 0xffff;
+  return -1;
   // Assert(0, "Inner Error: get precendence of token: %s\n", op_tk.str);
   // return 0xffff;
 }
@@ -283,9 +288,9 @@ static int32_t getMainOprtr(Token* tokens, int beg, int end){
 // return mainOprtPos if expression is leagle
 // return -1 if expression is illeagle
   int32_t mainOprtPos = -1;
-  int32_t mainOptrPrcdc = 0xffff;
-  printf("----begin---------------\n");
-  print_tokens(tokens, beg, end);
+  int32_t mainOptrPrcdc = -1;
+  // printf("----begin---------------\n");
+  // print_tokens(tokens, beg, end);
   bool isLastNonSpaceTkEndOfExpr = false;
   for(int i = beg; i <= end; ){
     if(tokens[i].type == '(' ){
@@ -304,10 +309,10 @@ static int32_t getMainOprtr(Token* tokens, int beg, int end){
         // printf("i: %d, tokens[i].str: %s, isLastNonSpaceTkEndOfExpr: %d\n", 
                 // i, tokens[i].str, isLastNonSpaceTkEndOfExpr);
         bool isSingle = !isLastNonSpaceTkEndOfExpr;
-        if(prcdcOprtr(tokens[i], isSingle) <= mainOptrPrcdc){
+        if(prcdcOprtr(tokens[i], isSingle) >= mainOptrPrcdc ){
           mainOprtPos = i;
           mainOptrPrcdc = prcdcOprtr(tokens[i], isSingle);
-        } else if(prcdcOprtr(tokens[i], isSingle) == 0xffff){
+        } else if(prcdcOprtr(tokens[i], isSingle) == -1){
             return -1;
         }
       }
@@ -315,9 +320,9 @@ static int32_t getMainOprtr(Token* tokens, int beg, int end){
     }
     i++;
   }
-  printf("mainOprtPos: %d %s\n", mainOprtPos, tokens[mainOprtPos].str);
+  // printf("mainOprtPos: %d\n", mainOprtPos);
   
-  printf("----end---------------\n");
+  // printf("----end---------------\n");
 
   return mainOprtPos;
   
