@@ -40,29 +40,29 @@ void expr_ut(void){
     //         printf("Get value: %d\n", val);
     //     }
     // }
-    for(int i = 0; i < sizeof(test1)/sizeof(char*); i++){
-            // getMainOptr_UT(test1[i], &succ);
-        word_t val = expr(test1[i], &succ);
-        if(succ){
-            printf("Get value: %d\n", val);
-        }
-    }
-    // for(int i = 0; i < loop; i++){
-    //     if(!fgets(buff, MAX_BUF_SIZE-1, stdin)){
-    //         Log("Wrong input");
-    //     }
-    //     Log("%s", buff);
-    //     assert(buff[strlen(buff)-1] == '\n' || buff[strlen(buff)-1] == EOF);
-    //     buff[strlen(buff)-1] = '\0';
-    //     sscanf(buff, "%s", ans_buf);
-    //     word_t ans = strtol(ans_buf, NULL, 10);
-    //     bool success = false;
-    //     word_t eval_ans = expr(buff+strlen(ans_buf), &success);
-    //     if(success){
-    //         Assert(ans == eval_ans, "Wrong Ans: %d vs Right Ans %d\n expression:%s\n", eval_ans, ans, buff+strlen(ans_buf));
-    //         // Log("PASSED, Expression: %s", buff+strlen(ans_buf));
-    //     } else{
-    //         Log("Something Wrong Happend, Expression:%s", buff+ strlen(ans_buf));
+    // for(int i = 0; i < sizeof(test1)/sizeof(char*); i++){
+    //         // getMainOptr_UT(test1[i], &succ);
+    //     word_t val = expr(test1[i], &succ);
+    //     if(succ){
+    //         printf("Get value: %d\n", val);
     //     }
     // }
+    for(int i = 0; i < loop; i++){
+        if(!fgets(buff, MAX_BUF_SIZE-1, stdin)){
+            Log("Wrong input");
+        }
+        Log("%s", buff);
+        assert(buff[strlen(buff)-1] == '\n' || buff[strlen(buff)-1] == EOF);
+        buff[strlen(buff)-1] = '\0';
+        sscanf(buff, "%s", ans_buf);
+        word_t ans = strtol(ans_buf, NULL, 10);
+        bool success = false;
+        word_t eval_ans = expr(buff+strlen(ans_buf), &success);
+        if(success){
+            Assert(ans == eval_ans, "Wrong Ans: %d vs Right Ans %d\n expression:%s\n", eval_ans, ans, buff+strlen(ans_buf));
+            // Log("PASSED, Expression: %s", buff+strlen(ans_buf));
+        } else{
+            Log("Something Wrong Happend, Expression:%s", buff+ strlen(ans_buf));
+        }
+    }
 }
