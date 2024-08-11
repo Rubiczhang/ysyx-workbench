@@ -286,7 +286,7 @@ static int32_t getMainOprtr(Token* tokens, int beg, int end){
   int32_t mainOptrPrcdc = 0xffff;
   printf("----begin---------------\n");
   print_tokens(tokens, beg, end);
-  bool isLastNonSpaceTkEndOfExpr = true;
+  bool isLastNonSpaceTkEndOfExpr = false;
   for(int i = beg; i <= end; ){
     if(tokens[i].type == '(' ){
       i = getEndOfParnth(tokens, i, end);
