@@ -20,7 +20,6 @@
  * Type 'man regex' for more information about POSIX regex functions.
  */
 #include <regex.h>
-#include <memory/vaddr.h>
 
 
 enum {
@@ -247,25 +246,23 @@ static word_t  getSigOprValue(Token op_tk, word_t oprnd_val){
     case '-':
       val = - oprnd_val;
       break;
-    case '*':
-      val = vaddr_read(oprnd_val, 4);
-      break;
+    // case '*':
+    //   val = *(word_t*)oprnd_val;
+    //   break;
   }
   return val;
 }
 
 static int32_t prcdcOprtr(Token op_tk,  bool isSigOpr){
-  assert(isBinOperator(op_tk) || isSingleOperator(op_tk));
-  // Lower is more precendency
-  //TODO 65536
+  // assert(isBinOperator(op_tk) || isSingleOperator(op_tk));
   if(!isSigOpr){
     assert(isBinOperator(op_tk));
     switch(op_tk.type){
       case TK_EQ:
-        return 7;
+        return 1;
       case '+':
       case '-':  
-        return 4;
+        return 2;
       case '*':  
       case '/':
         return 3;
@@ -273,13 +270,11 @@ static int32_t prcdcOprtr(Token op_tk,  bool isSigOpr){
   } else if(isSingleOperator(op_tk)){
     switch(op_tk.type){
       case '-':
-        return 1;
-      case '*':
-        return 1;
+        return 6;
     }
   }
 
-  return -1;
+  return 0xffff;
   // Assert(0, "Inner Error: get precendence of token: %s\n", op_tk.str);
   // return 0xffff;
 }
@@ -309,10 +304,10 @@ static int32_t getMainOprtr(Token* tokens, int beg, int end){
         // printf("i: %d, tokens[i].str: %s, isLastNonSpaceTkEndOfExpr: %d\n", 
                 // i, tokens[i].str, isLastNonSpaceTkEndOfExpr);
         bool isSingle = !isLastNonSpaceTkEndOfExpr;
-        if(prcdcOprtr(tokens[i], isSingle) >= mainOptrPrcdc ){
+        if(prcdcOprtr(tokens[i], isSingle) <= mainOptrPrcdc){
           mainOprtPos = i;
           mainOptrPrcdc = prcdcOprtr(tokens[i], isSingle);
-        } else if(prcdcOprtr(tokens[i], isSingle) == -1){
+        } else if(prcdcOprtr(tokens[i], isSingle) == 0xffff){
             return -1;
         }
       }
