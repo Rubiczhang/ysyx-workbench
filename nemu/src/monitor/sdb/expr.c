@@ -138,13 +138,13 @@ static bool make_token(char *e) {
   return true;
 }
 
-static void print_tokens(Token* tokens, int32_t beg, int32_t end ){
-  Log("Illegal expression: ");
-  for(int i = beg; i <= end; i++){
-    printf("%s ", tokens[i].str);
-  }
-  printf("\nbeg: %d end: %d\n",beg, end);
-}
+#define print_tokens(tokens, beg, end ) do{\
+  Log("Illegal expression: ");  \
+  for(int i = beg; i <= end; i++){ \
+    printf("%s ", tokens[i].str);\
+  }\
+  printf("\nbeg: %d end: %d\n",beg, end);\
+} while(0)
 
 static int32_t getEndOfParnth(Token* tokens, int beg, int end){
   assert(tokens[beg].type == '(');
