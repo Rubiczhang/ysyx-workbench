@@ -60,12 +60,13 @@ include $(NEMU_HOME)/scripts/native.mk
 
 test: NEMU_EXEC_ARGS = < temp/test_input.txt
 
-.PHONY: ut
+.PHONY: ut random_test
 
 
 TEST_TARGET ?=
 ut: CFLAGS += -DUT -Wno-error=unused-function -Wno-error=unused-variable
 ut: run
+
 
 
 endif
