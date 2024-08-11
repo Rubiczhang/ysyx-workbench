@@ -73,7 +73,7 @@ void init_regex() {
 }
 
 #define TOKEN_LEN_MAX 32
-#define NR_TOKEN_MAX 256
+#define NR_TOKEN_MAX 512
 
 typedef struct token {
   int type;
@@ -123,6 +123,7 @@ static bool make_token(char *e) {
             strncpy(tokens[nr_token].str, substr_start, substr_len<TOKEN_LEN_MAX ? substr_len: TOKEN_LEN_MAX-1);
             tokens[nr_token].str[substr_len] = '\0';
             tokens[nr_token++].type = rules[i].token_type;
+            Assert(nr_token < NR_TOKEN_MAX, "Too much Tokens\n");
         }
         break;
       }
