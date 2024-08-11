@@ -256,17 +256,19 @@ static int32_t prcdcOprtr(Token op_tk,  bool isSigOpr){
   if(!isSigOpr){
     assert(isBinOperator(op_tk));
     switch(op_tk.type){
+      case TK_EQ:
+        return 1;
       case '+':
       case '-':  
-        return 1;
+        return 2;
       case '*':  
       case '/':
-        return 2;
+        return 3;
     }
   } else if(isSingleOperator(op_tk)){
     switch(op_tk.type){
       case '-':
-        return 5;
+        return 6;
     }
   }
 
