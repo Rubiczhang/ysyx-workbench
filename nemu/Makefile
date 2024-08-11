@@ -68,5 +68,8 @@ ut: CFLAGS += -DUT -Wno-error=unused-function -Wno-error=unused-variable
 ut: run
 
 
+random_test: CFLAGS += -DUT -Wno-error=unused-function -Wno-error=unused-variable
+random_test: run-env
+	$(NEMU_HOME)/tools/gen-expr/a.out |$(NEMU_EXEC)
 
 endif
