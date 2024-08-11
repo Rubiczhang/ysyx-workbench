@@ -72,12 +72,15 @@ void init_regex() {
   }
 }
 
+#define TOKEN_LEN_MAX 32
+#define NR_TOKEN_MAX 32
+
 typedef struct token {
   int type;
-  char str[32];
+  char str[TOKEN_LEN_MAX];
 } Token;
 
-static Token tokens[32] __attribute__((used)) = {};
+static Token tokens[NR_TOKEN_MAX] __attribute__((used)) = {};
 static int nr_token __attribute__((used))  = 0;
 
 
@@ -97,6 +100,9 @@ static bool make_token(char *e) {
       if (regexec(&re[i], e + position, 1, &pmatch, 0) == 0 && pmatch.rm_so == 0) {
         char *substr_start = e + position;
         int substr_len = pmatch.rm_eo;
+        if(substr_len >= TOKEN_LEN_MAX){
+          Log("Too long token, tokens least: %s\n", e+position);
+        }
 
         // Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s",
         //     i, rules[i].regex, position, substr_len, substr_len, substr_start);
@@ -112,7 +118,7 @@ static bool make_token(char *e) {
           case TK_NOTYPE: //space, do nothing
             break;
           default:
-            strncpy(tokens[nr_token].str, substr_start, substr_len<32 ?substr_len: 31);
+            strncpy(tokens[nr_token].str, substr_start, substr_len<TOKEN_LEN_MAX ? substr_len: TOKEN_LEN_MAX-1);
             tokens[nr_token].str[substr_len] = '\0';
             tokens[nr_token++].type = rules[i].token_type;
         }
@@ -214,10 +220,14 @@ static word_t getBinOprValue(word_t first, Token op_tk, word_t last){
       val = first*last;
       break;
     case '/':
+      if(last == 0){
+        Log("Division by zero");
+        return 0;
+      }
       val = first/last;
       break;
     case TK_EQ :
-      val = first == last;
+      val = (first == last);
       break;
   }
   return val;
@@ -357,7 +367,6 @@ word_t expr(char *e, bool *success) {
   *success = true;
 
   // print_tokens(tokens, 0, nr_token-1);
-  // /* TODO: Insert codes to evaluate the expression. */
   word_t value = eval(tokens, 0, nr_token-1, success);
   if(*success)
     return value;

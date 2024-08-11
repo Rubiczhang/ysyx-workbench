@@ -23,6 +23,7 @@
 // this should be enough
 static char buf[65536] = {};
 static char code_buf[65536 + 128] = {}; // a little larger than `buf`
+static int buf_len = 0;
 static char *code_format =
 "#include <stdio.h>\n"
 "int main() { "
@@ -31,8 +32,70 @@ static char *code_format =
 "  return 0; "
 "}";
 
-static void gen_rand_expr() {
-  buf[0] = '\0';
+
+static const char* const bin_oprator[] = {
+  "+", "-", "*", "/", "=="
+};
+
+static const char* const sig_oprator[] = {
+  "-"
+};
+static int32_t  nr_bin_oprator = sizeof(bin_oprator)/sizeof(char*);
+static int32_t  nr_sig_oprator = sizeof(sig_oprator)/sizeof(char*);
+
+void gen_num(){
+  int32_t r = rand();
+  sprintf(buf+buf_len, "%u", r);
+  buf_len = strlen(buf);
+}
+
+void gen_str(const char* str){
+  sprintf(buf+buf_len, "%s", str);
+  buf_len+= strlen(str);
+}
+
+void gen_bin_oprator(){
+  int32_t r = rand();
+  r = r % nr_bin_oprator;
+  gen_str(bin_oprator[r]);
+  gen_str(" ");
+}
+
+void gen_sig_oprator(){
+  int32_t r = rand();
+  r = r % nr_sig_oprator;
+  gen_str(sig_oprator[r]);
+  gen_str(" ");
+}
+
+static void gen_rand_expr(int deps) {
+  if(deps >= 30){
+    gen_num();
+    return;
+  }
+  int r = rand();
+  switch(r%4) {
+    case 0: 
+      gen_num(); break;
+    case 1:
+      gen_str("(");
+      gen_rand_expr(deps+1);
+      gen_str(")");
+      break;
+    case 2:
+      // gen_str("(");
+      gen_rand_expr(deps+1);
+      // gen_str(")");
+      gen_bin_oprator();
+      // gen_str("(");
+      gen_rand_expr(deps+1);
+      // gen_str(")");
+      break;
+    case 3:
+      gen_sig_oprator();
+      gen_rand_expr(deps+1);
+      break;
+  }
 }
 
 int main(int argc, char *argv[]) {
@@ -44,7 +107,8 @@ int main(int argc, char *argv[]) {
   }
   int i;
   for (i = 0; i < loop; i ++) {
-    gen_rand_expr();
+    buf_len = 0;
+    gen_rand_expr(0);
 
     sprintf(code_buf, code_format, buf);
 
