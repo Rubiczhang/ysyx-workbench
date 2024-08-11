@@ -64,7 +64,7 @@ test: NEMU_EXEC_ARGS = < temp/test_input.txt
 
 
 TEST_TARGET ?=
-ut: CFLAGS += -DUT -Wno-error=unused-function
+ut: CFLAGS += -DUT -Wno-error=unused-function -Wno-error=unused-variable
 ut: run
 
 
