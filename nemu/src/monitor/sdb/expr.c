@@ -310,10 +310,14 @@ static int32_t getMainOprtr(Token* tokens, int beg, int end){
                 // i, tokens[i].str, isLastNonSpaceTkEndOfExpr);
         bool isSingle = !isLastNonSpaceTkEndOfExpr;
         //TODO: Specific for signle Operators
-        if(prcdcOprtr(tokens[i], isSingle) >= mainOptrPrcdc && !mainOptrSig ){
-          mainOprtPos = i;
-          mainOptrPrcdc = prcdcOprtr(tokens[i], isSingle);
-          mainOptrSig = isSingle;
+        if(prcdcOprtr(tokens[i], isSingle) >= mainOptrPrcdc ){
+          if(mainOptrSig && isSingle) //for a special precedence equal
+            ;
+          else{
+            mainOprtPos = i;
+            mainOptrPrcdc = prcdcOprtr(tokens[i], isSingle);
+            mainOptrSig = isSingle;
+          }
         } else if(prcdcOprtr(tokens[i], isSingle) == -1){
             return -1;
         }

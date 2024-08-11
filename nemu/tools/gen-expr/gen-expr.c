@@ -20,6 +20,7 @@
 #include <assert.h>
 #include <string.h>
 
+static const char* const test_buf = "(- - - (- (((- - - 885390357* (659302715)))))- 1396816825- - 1830826051)/ - - (- - (833704168))";
 // this should be enough
 static char output_buf[65536] = {};
 static char cal_buf[65536] = {};
@@ -118,6 +119,7 @@ int main(int argc, char *argv[]) {
     gen_rand_expr(0);
 
     sprintf(code_buf, code_format, cal_buf);
+    // sprintf(code_buf, code_format, test_buf);
 
     FILE *fp = fopen("/tmp/.code.c", "w");
     assert(fp != NULL);
