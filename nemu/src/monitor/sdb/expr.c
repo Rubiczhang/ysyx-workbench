@@ -105,9 +105,9 @@ static bool make_token(char *e) {
           Log("Too long token, tokens least: %s\n", e+position);
         }
         
-        Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s",
-            i, rules[i].regex, position, substr_len, substr_len, substr_start);
-        Log("nr_token:%d\n", nr_token);
+        // Log("match rules[%d] = \"%s\" at position %d with len %d: %.*s",
+        //     i, rules[i].regex, position, substr_len, substr_len, substr_start);
+        // Log("nr_token:%d\n", nr_token);
 
         position += substr_len;
 
