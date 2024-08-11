@@ -315,7 +315,7 @@ static int32_t getMainOprtr(Token* tokens, int beg, int end){
     }
     i++;
   }
-  // printf("mainOprtPos: %d\n", mainOprtPos);
+  printf("mainOprtPos: %d %s\n", mainOprtPos, tokens[mainOprtPos].str);
   
   // printf("----end---------------\n");
 
