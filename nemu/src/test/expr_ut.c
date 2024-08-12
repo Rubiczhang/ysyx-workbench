@@ -51,7 +51,6 @@ void expr_ut(void){
         if(!fgets(buff, MAX_BUF_SIZE-1, stdin)){
             Log("Wrong input");
         }
-        Log("%s", buff);
         printf("%d", buff[strlen(buff)-1]);
         assert(buff[strlen(buff)-1] == '\n'  || //input from file
                     buff[strlen(buff)-1] == EOF || //input from end line of file
