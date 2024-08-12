@@ -30,7 +30,7 @@ bool make_token(char *e) ;
 static char buff[MAX_BUF_SIZE];
 static char ans_buf[32];
 
-int32_t loop = 32;
+int32_t loop = 1000;
 void expr_ut(void){
     bool succ;
     // for(int i = 0; i < sizeof(test)/sizeof(char*); i++){
@@ -51,12 +51,10 @@ void expr_ut(void){
     for(int i = 0; i < loop; i++){
         if(!fgets(buff, MAX_BUF_SIZE-1, stdin)){
             printf("%d", buff[strlen(buff)-1]);
-
             Log("Wrong input:%s", buff);
         }
         assert(buff[strlen(buff)-1] == '\n'  || //input from file
-                    buff[strlen(buff)-1] == EOF || //input from end line of file
-                    buff[strlen(buff)-1] == '\0'); //input from pipe
+                    buff[strlen(buff)-1] == EOF ); //input from end line of file
         buff[strlen(buff)-1] = '\0';
         sscanf(buff, "%s", ans_buf);
         word_t ans = strtol(ans_buf, NULL, 10);

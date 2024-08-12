@@ -58,6 +58,7 @@ else
 # Include rules to build NEMU
 include $(NEMU_HOME)/scripts/native.mk
 
+test: CFLAGS +=  -Wno-error=unused-function -Wno-error=unused-variable
 test: run-env
 	$(NEMU_EXEC) < temp/test_input.txt
 
