@@ -108,7 +108,7 @@ static void gen_rand_expr(int deps) {
 int main(int argc, char *argv[]) {
   int seed = time(0);
   srand(seed);
-  int loop = 10;
+  int loop = 1000;
   if (argc > 1) {
     sscanf(argv[1], "%d", &loop);
   }
@@ -138,7 +138,7 @@ int main(int argc, char *argv[]) {
     // if(ret !=0 ) 
       // continue;
     ret = pclose(fp);
-    setvbuf(stdout, NULL, _IONBF, 0);
+    // setvbuf(stdout, NULL, _IONBF, 0);
     // if(ret !=0 ) {
     //   // printf("Div-0: %u %s\n",result, output_buf);
     //   continue;
