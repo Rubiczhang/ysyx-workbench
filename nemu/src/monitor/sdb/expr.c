@@ -287,8 +287,10 @@ static int32_t getMainOprtr(Token* tokens, int beg, int end){
   int32_t mainOprtPos = -1;
   int32_t mainOptrPrcdc = -1;
   bool mainOptrSig = false;
-  // printf("----begin---------------\n");
-  // print_tokens(tokens, beg, end);
+#ifdef P_MAINOPTR
+  printf("----begin---------------\n");
+  print_tokens(tokens, beg, end);
+#endif
   bool isLastNonSpaceTkEndOfExpr = false;
   for(int i = beg; i <= end; ){
     if(tokens[i].type == '(' ){
@@ -326,9 +328,11 @@ static int32_t getMainOprtr(Token* tokens, int beg, int end){
     }
     i++;
   }
-  // printf("mainOprtPos: %d mainOptr: %s\n", mainOprtPos, tokens[mainOprtPos].str);
+#ifdef P_MAINOPTR
+  printf("mainOprtPos: %d mainOptr: %s\n", mainOprtPos, tokens[mainOprtPos].str);
   
-  // printf("----end---------------\n");
+  printf("----end---------------\n");
+#endif
 
   return mainOprtPos;
   

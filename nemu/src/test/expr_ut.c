@@ -40,6 +40,7 @@ void expr_ut(void){
     //         printf("Get value: %d\n", val);
     //     }
     // }
+
     // for(int i = 0; i < sizeof(test1)/sizeof(char*); i++){
     //         // getMainOptr_UT(test1[i], &succ);
     //     word_t val = expr(test1[i], &succ);
@@ -62,7 +63,12 @@ void expr_ut(void){
         word_t eval_ans = expr(buff+strlen(ans_buf), &success);
         if(success){
             Assert(ans == eval_ans, "Wrong Ans: %d vs Right Ans %d\n expression:%s\n", eval_ans, ans, buff+strlen(ans_buf));
-            Log("PASSED, Expression: %s", buff+strlen(ans_buf));
+            FILE* fp = fopen("./wrong_expr.txt", "rw");
+            if(fp){
+                fprintf(fp, "%s", buff);
+                fclose(fp);
+            }
+            // Log("PASSED, Expression: %s", buff+strlen(ans_buf));
         } else{
             Log("Something Wrong Happend, Expression:%s", buff+ strlen(ans_buf));
         }
