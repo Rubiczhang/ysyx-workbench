@@ -117,6 +117,8 @@ int main(int argc, char *argv[]) {
     out_buf_len = 0;
     cal_buf_len = 0;
     gen_rand_expr(0);
+    // char*cal_buf;
+    // cal_buf = "((1294395022u))/ (1425416474u== 893554683u)";
 
     sprintf(code_buf, code_format, cal_buf);
     // sprintf(code_buf, code_format, test_buf);
@@ -133,9 +135,12 @@ int main(int argc, char *argv[]) {
     assert(fp != NULL);
 
     int result;
-    ret = fscanf(fp, "%u", &result);
-    pclose(fp);
-
+    fscanf(fp, "%u", &result);
+    // if(ret !=0 ) 
+      // continue;
+    ret = pclose(fp);
+    if(ret !=0 ) 
+      continue;
     printf("%u %s\n", result, output_buf);
     fflush(stdout);
   }
