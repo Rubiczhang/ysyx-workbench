@@ -62,7 +62,7 @@ void expr_ut(void){
         bool success = false;
         word_t eval_ans = expr(buff+strlen(ans_buf), &success);
         if(success){
-            FILE* fp = fopen("./wrong_expr.txt", "rw");
+            FILE* fp = fopen("wrong_expr.txt", "w");
             if(fp){
                 fprintf(fp, "%s", buff);
                 fclose(fp);
