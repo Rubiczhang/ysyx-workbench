@@ -224,7 +224,7 @@ static word_t getBinOprValue(word_t first, Token op_tk, word_t last, bool* succe
     case '/':
       if(last == 0){
         Log("Division by zero");
-        print_tokens(tokens, 0, nr_token-1);
+        // print_tokens(tokens, 0, nr_token-1);
         *success = false;
         return 0;
       }
