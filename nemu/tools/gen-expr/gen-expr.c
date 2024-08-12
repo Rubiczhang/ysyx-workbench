@@ -137,6 +137,7 @@ int main(int argc, char *argv[]) {
     pclose(fp);
 
     printf("%u %s\n", result, output_buf);
+    fflush(stdout);
   }
   return 0;
 }
