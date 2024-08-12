@@ -139,10 +139,10 @@ int main(int argc, char *argv[]) {
       // continue;
     ret = pclose(fp);
     setvbuf(stdout, NULL, _IONBF, 0);
-    if(ret !=0 ) {
-      // printf("Div-0: %u %s\n",result, output_buf);
-      continue;
-    }
+    // if(ret !=0 ) {
+    //   // printf("Div-0: %u %s\n",result, output_buf);
+    //   continue;
+    // }
     printf("%u %s\n", result, output_buf);
   }
   return 0;
