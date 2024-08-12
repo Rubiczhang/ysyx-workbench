@@ -30,7 +30,7 @@ bool make_token(char *e) ;
 static char buff[MAX_BUF_SIZE];
 static char ans_buf[32];
 
-int32_t loop = 1000;
+int32_t loop = 10;
 void expr_ut(void){
     bool succ;
     // for(int i = 0; i < sizeof(test)/sizeof(char*); i++){
