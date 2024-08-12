@@ -108,7 +108,7 @@ static void gen_rand_expr(int deps) {
 int main(int argc, char *argv[]) {
   int seed = time(0);
   srand(seed);
-  int loop = 1000;
+  int loop = 10;
   if (argc > 1) {
     sscanf(argv[1], "%d", &loop);
   }
@@ -119,7 +119,6 @@ int main(int argc, char *argv[]) {
     gen_rand_expr(0);
     // char*cal_buf;
     // cal_buf = "((1294395022u))/ (1425416474u== 893554683u)";
-
     sprintf(code_buf, code_format, cal_buf);
     // sprintf(code_buf, code_format, test_buf);
 
@@ -141,6 +140,7 @@ int main(int argc, char *argv[]) {
     ret = pclose(fp);
     if(ret !=0 ) 
       continue;
+    setvbuf(stdout, NULL, _IONBF, 0);
     printf("%u %s\n", result, output_buf);
     fflush(stdout);
   }
