@@ -67,7 +67,7 @@ void expr_ut(void){
                 fprintf(fp, "%s", buff);
                 fclose(fp);
             }
-            Assert(ans == eval_ans, "Wrong Ans: %d vs Right Ans %d\n expression:%s\n", eval_ans, ans, buff+strlen(ans_buf));
+            Assert(ans == eval_ans, "Wrong Ans: %u vs Right Ans %u\n expression:%s\n", eval_ans, ans, buff+strlen(ans_buf));
             // Log("PASSED, Expression: %s", buff+strlen(ans_buf));
         } else{
             Log("Something Wrong Happend, Expression:%s", buff+ strlen(ans_buf));
