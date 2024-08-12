@@ -53,7 +53,9 @@ void expr_ut(void){
         }
         Log("%s", buff);
         printf("%d", buff[strlen(buff)-1]);
-        assert(buff[strlen(buff)-1] == '\n' || buff[strlen(buff)-1] == EOF);
+        assert(buff[strlen(buff)-1] == '\n'  || //input from file
+                    buff[strlen(buff)-1] == EOF || //input from end line of file
+                    buff[strlen(buff)-1] == '\0'); //input from pipe
         buff[strlen(buff)-1] = '\0';
         sscanf(buff, "%s", ans_buf);
         word_t ans = strtol(ans_buf, NULL, 10);
