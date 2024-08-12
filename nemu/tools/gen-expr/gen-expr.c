@@ -118,7 +118,7 @@ int main(int argc, char *argv[]) {
     cal_buf_len = 0;
     gen_rand_expr(0);
 
-    sprintf(code_buf, code_format, output_buf);
+    sprintf(code_buf, code_format, cal_buf);
     // sprintf(code_buf, code_format, test_buf);
 
     FILE *fp = fopen("/tmp/.code.c", "w");
