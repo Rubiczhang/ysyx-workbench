@@ -76,7 +76,7 @@ void gen_sig_oprator(){
 }
 
 static void gen_rand_expr(int deps) {
-  if(deps >= 30){
+  if(deps >= 20){
     gen_num();
     return;
   }
