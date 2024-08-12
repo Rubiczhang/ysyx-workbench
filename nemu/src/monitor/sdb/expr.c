@@ -207,7 +207,7 @@ static bool isSingleOperator(Token token){
   return res;
 }
 
-static word_t getBinOprValue(word_t first, Token op_tk, word_t last){
+static word_t getBinOprValue(word_t first, Token op_tk, word_t last, bool* success){
   Assert(isBinOperator(op_tk), "Op is not binary operater, Op:%s\n", op_tk.str);
 
   word_t val = 0;
@@ -225,6 +225,7 @@ static word_t getBinOprValue(word_t first, Token op_tk, word_t last){
       if(last == 0){
         Log("Division by zero");
         print_tokens(tokens, 0, nr_token-1);
+        success = false;
         return 0;
       }
       val = first/last;
@@ -375,7 +376,7 @@ static word_t eval(Token* tokens, int beg, int end, bool* success){
     // printf("leftValue: %d, op_token: %s, rightValue:%d\n", leftValue, op_token.str, rightValue);
     
     if(mainOptrPos > beg)
-      value = getBinOprValue(leftValue, op_token, rightValue);
+      value = getBinOprValue(leftValue, op_token, rightValue, success);
     else
       value = getSigOprValue(op_token, rightValue);
   }
