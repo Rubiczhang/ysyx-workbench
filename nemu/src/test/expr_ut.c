@@ -50,7 +50,7 @@ void expr_ut(void){
     // }
     for(int i = 0; i < loop; i++){
         if(!fgets(buff, MAX_BUF_SIZE-1, stdin)){
-            Log("Wrong input");
+            Log("Wrong input:%s", buff);
         }
         printf("%d", buff[strlen(buff)-1]);
         assert(buff[strlen(buff)-1] == '\n'  || //input from file
