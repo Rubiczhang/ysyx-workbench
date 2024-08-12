@@ -77,6 +77,7 @@ ut: run
 
 random_test: CFLAGS += -DUT -Wno-error=unused-function -Wno-error=unused-variable
 random_test: run-env
-	strace -o strace_output.txt sh -c '$(NEMU_HOME)/tools/gen-expr/a.out |$(NEMU_EXEC)'
+#	strace -o strace_output.txt sh -c '$(NEMU_HOME)/tools/gen-expr/a.out |$(NEMU_EXEC)'
+	$(NEMU_HOME)/tools/gen-expr/a.out |$(NEMU_EXEC)
 
 endif
