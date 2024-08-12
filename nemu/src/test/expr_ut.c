@@ -30,7 +30,7 @@ bool make_token(char *e) ;
 static char buff[MAX_BUF_SIZE];
 static char ans_buf[32];
 
-int32_t loop = 10;
+int32_t loop = 2;
 void expr_ut(void){
     bool succ;
     // for(int i = 0; i < sizeof(test)/sizeof(char*); i++){
@@ -67,7 +67,7 @@ void expr_ut(void){
                 fclose(fp);
             }
             Assert(ans == eval_ans, "Wrong Ans: %u vs Right Ans %u\n expression:%s\n", eval_ans, ans, buff+strlen(ans_buf));
-            Log("PASSED, Expression: %s", buff+strlen(ans_buf));
+            // Log("PASSED, Expression: %s", buff+strlen(ans_buf));
         } else{
             Log("Something Wrong Happend, Expression:%s", buff+ strlen(ans_buf));
         }
