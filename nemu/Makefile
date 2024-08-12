@@ -77,6 +77,6 @@ ut: run
 
 random_test: CFLAGS += -DUT -Wno-error=unused-function -Wno-error=unused-variable
 random_test: run-env
-	$(NEMU_HOME)/tools/gen-expr/a.out |$(NEMU_EXEC)
+	strace {$(NEMU_HOME)/tools/gen-expr/a.out |$(NEMU_EXEC)}
 
 endif
