@@ -65,7 +65,7 @@ test: run-env
 .PHONY: ut random_test sigle_test
 
 
-sigle_test: CFLAGS += -DP_MAINOPTR -Wno-error=unused-function -Wno-error=unused-variable
+sigle_test: CFLAGS += -DP_MAINOPTR -DUT -Wno-error=unused-function -Wno-error=unused-variable
 sigle_test: run-env
 	$(NEMU_EXEC) < temp/test_input.txt
 
