@@ -14,5 +14,6 @@
 #**************************************************************************************/
 
 NAME = gen-expr
-SRCS = gen-expr.c
+SRCS = $(NEMU_HOME)/tools/gen-expr/gen-expr.c
+CFLAGS += -Wno-error=unused-result
 include $(NEMU_HOME)/scripts/build.mk

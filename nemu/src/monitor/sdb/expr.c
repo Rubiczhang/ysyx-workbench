@@ -27,6 +27,10 @@ enum {
   TK_NOTYPE = 256, 
   TK_EQ,
   TK_DINT,
+  TK_HINT,
+  TK_REG,
+  TK_NEQ,
+  TK_ANDAND,
 
   /* TODO: Add more token types */
 
@@ -44,12 +48,17 @@ static struct rule {
   {" +", TK_NOTYPE},    // spaces
   {"\\+", '+'},         // plus
   {"==", TK_EQ},        // equal
+  {"0x[0-9A-Fa-f]+", TK_HINT},        // Hex int
   {"[0-9]+", TK_DINT},        // decimal int
+  {"\\$[0-9A-Za-z]+", TK_REG},
+  {"\\!=", TK_NEQ},
+  {"&&", TK_ANDAND},
   {"-", '-'},
   {"\\*", '*'},
   {"/", '/'},
   {"\\(", '('},
-  {"\\)", ')'}
+  {"\\)", ')'},
+  
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -145,6 +154,34 @@ static bool make_token(char *e) {
   printf("\nbeg: %d end: %d\n",beg, end);\
 } while(0)
 
+
+bool is_number(Token tk){
+  switch(tk.type){
+    case TK_DINT:
+    case TK_HINT:
+      return true;
+    default:
+      return false;
+  }
+}
+
+word_t strToNum(Token tk){
+  Assert(is_number(tk),"Inner Error: argument of strToNum should be number\n \
+          but not %d, token: %s", tk.type, tk.str);
+  word_t res;
+  int base = 0;
+  switch(tk.type){
+    case TK_DINT:
+      base = 10; break;
+    case TK_HINT:
+      base = 16; break;
+  }
+  res = strtoll(tk.str, NULL, base);
+  return res;
+}
+
+
+
 static int32_t getEndOfParnth(Token* tokens, int beg, int end){
   assert(tokens[beg].type == '(');
   int cnt_left_prntth = 0;
@@ -190,6 +227,8 @@ static bool isBinOperator(Token token){
     case '*':
     case '/':
     case TK_EQ:
+    case TK_NEQ:
+    case TK_ANDAND:
       res = true;
       break;
   }
@@ -233,6 +272,10 @@ static word_t getBinOprValue(word_t first, Token op_tk, word_t last, bool* succe
     case TK_EQ :
       val = (first == last);
       break;
+    case TK_NEQ:
+      val = (first != last);
+    case TK_ANDAND:
+      val = (first && last);
   }
   // printf("%u %s %u = %u\n",first, op_tk.str, last, val);
   return val;
@@ -260,7 +303,10 @@ static int32_t prcdcOprtr(Token op_tk,  bool isSigOpr){
   if(!isSigOpr){
     assert(isBinOperator(op_tk));
     switch(op_tk.type){
+      case TK_ANDAND:
+        return 11;
       case TK_EQ:
+      case TK_NEQ:
         return 7;
       case '+':
       case '-':  
@@ -302,9 +348,10 @@ static int32_t getMainOprtr(Token* tokens, int beg, int end){
         print_tokens(tokens, beg, end);
         return i;
       }
-    } else if(tokens[i].type == TK_DINT){
-      isLastNonSpaceTkEndOfExpr = true; // last is decimal int
-    } else if(tokens[i].type == TK_NOTYPE){
+    } else if(is_number(tokens[i]) || tokens[i].type==TK_REG){
+      isLastNonSpaceTkEndOfExpr = true; // last is int
+    }
+    else if(tokens[i].type == TK_NOTYPE){
       ;
     } 
     else {
@@ -345,11 +392,20 @@ static word_t eval(Token* tokens, int beg, int end, bool* success){
   word_t value = 0;
   Assert(beg <= end, "input of eval is illegal: beg:%d, end:%d\n",beg, end);
   if(beg == end){           //<number>
-    if(tokens[beg].type != TK_DINT){
+    if(! (is_number(tokens[beg]) || tokens[beg].type == TK_REG)){
       assert(0);
       *success = false;
     }
-    value = strtol(tokens[beg].str, NULL, 10);
+    if(is_number(tokens[beg]))
+      value = strToNum(tokens[beg]);
+    else if(tokens[beg].type == TK_REG){
+      bool succ = false;
+      value = isa_reg_str2val(tokens[beg].str+1, &succ);
+      if(!succ){
+        *success = false;
+        Log("Wrong Reg Name:%s", tokens[beg].str);
+      }
+    }
   }
   else if(tokens[beg].type == '(' && (getEndOfParnth(tokens, beg, end) == end)){
     // '(' <expr> ')'

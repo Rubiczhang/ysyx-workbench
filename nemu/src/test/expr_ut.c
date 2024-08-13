@@ -26,11 +26,16 @@ word_t expr(char* e, bool* success);
 word_t getMainOptr_UT(char *e, bool *success);
 bool make_token(char *e) ;
 
+
+#ifndef TEST_LOOP
+#define TEST_LOOP 100
+#endif
+
 #define MAX_BUF_SIZE 262104
 static char buff[MAX_BUF_SIZE];
 static char ans_buf[32];
 
-int32_t loop = 100000;
+int32_t loop = TEST_LOOP;
 void expr_ut(void){
     bool succ;
     // for(int i = 0; i < sizeof(test)/sizeof(char*); i++){

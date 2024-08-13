@@ -20,7 +20,10 @@
 #include <assert.h>
 #include <string.h>
 
-static const char* const test_buf = "(- - - (- (((- - - 885390357* (659302715)))))- 1396816825- - 1830826051)/ - - (- - (833704168))";
+#ifndef TEST_LOOP
+#define TEST_LOOP 100
+#endif
+
 // this should be enough
 static char output_buf[65536] = {};
 static char cal_buf[65536] = {};
@@ -36,8 +39,15 @@ static char *code_format =
 "}";
 
 
+static const char *regs[] = {
+  "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
+  "s0", "s1", "a0", "a1", "a2", "a3", "a4", "a5",
+  "a6", "a7", "s2", "s3", "s4", "s5", "s6", "s7",
+  "s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6"
+};
+static const int nr_regs = sizeof(regs)/sizeof(regs[0]);
 static const char* const bin_oprator[] = {
-  "+", "-", "*", "/", "=="
+  "+", "-", "*", "/", "==", "!=", "&&"
 };
 
 static const char* const sig_oprator[] = {
@@ -50,6 +60,14 @@ void gen_num(){
   int32_t r = rand();
   sprintf(output_buf+out_buf_len, "%u", r);
   sprintf(cal_buf+cal_buf_len, "%uu", r);
+  out_buf_len = strlen(output_buf);
+  cal_buf_len = strlen(cal_buf);
+}
+
+void gen_hex_num(){
+  int32_t r = rand();
+  sprintf(output_buf+out_buf_len, "0x%x", r);
+  sprintf(cal_buf+cal_buf_len, "0x%xu", r);
   out_buf_len = strlen(output_buf);
   cal_buf_len = strlen(cal_buf);
 }
@@ -75,13 +93,21 @@ void gen_sig_oprator(){
   gen_str(" ");
 }
 
+void gen_reg(){
+  int32_t r = rand()%nr_regs;
+  sprintf(output_buf+out_buf_len, "$%s", regs[r]);
+  sprintf(cal_buf+cal_buf_len, "%uu", 0);
+  out_buf_len = strlen(output_buf);
+  cal_buf_len = strlen(cal_buf);
+}
+
 static void gen_rand_expr(int deps) {
-  if(deps >= 10){
+  if(deps >= 15){
     gen_num();
     return;
   }
   int r = rand();
-  switch(r%4) {
+  switch(r%6) {
     case 0: 
       gen_num(); break;
     case 1:
@@ -102,13 +128,18 @@ static void gen_rand_expr(int deps) {
       gen_sig_oprator();
       gen_rand_expr(deps+1);
       break;
+    case 4:
+      gen_hex_num();
+      break;
+    case 5:
+      gen_reg();
   }
 }
 
 int main(int argc, char *argv[]) {
   int seed = time(0);
   srand(seed);
-  int loop = 100000;
+  int loop = TEST_LOOP;
   if (argc > 1) {
     sscanf(argv[1], "%d", &loop);
   }
@@ -135,9 +166,7 @@ int main(int argc, char *argv[]) {
 
     int result;
     fscanf(fp, "%u", &result);
-    // if(ret !=0 ) 
-      // continue;
-    ret = pclose(fp);
+    pclose(fp);
     // setvbuf(stdout, NULL, _IONBF, 0);
     // if(ret !=0 ) {
     //   // printf("Div-0: %u %s\n",result, output_buf);

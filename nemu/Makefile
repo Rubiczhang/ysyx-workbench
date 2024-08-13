@@ -75,9 +75,13 @@ ut: CFLAGS += -DUT -Wno-error=unused-function -Wno-error=unused-variable
 ut: run
 
 
-random_test: CFLAGS += -DUT -Wno-error=unused-function -Wno-error=unused-variable
+ifndef TEST_LOOP
+TEST_LOOP = 100
+endif #TEST_LOOP
+random_test: CFLAGS += -DUT -Wno-error=unused-function -Wno-error=unused-variable -DTEST_LOOP=$(TEST_LOOP)
 random_test: run-env
 #	strace -o strace_output.txt sh -c '$(NEMU_HOME)/tools/gen-expr/a.out |$(NEMU_EXEC)'
-	$(NEMU_HOME)/tools/gen-expr/a.out |$(NEMU_EXEC)
+	make app -f tools/gen-expr/Makefile  CFLAGS+=-DTEST_LOOP=$(TEST_LOOP)
+	$(NEMU_HOME)/build/gen-expr |$(NEMU_EXEC)
 
 endif
