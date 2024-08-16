@@ -1,1 +1,0 @@
-DIRS-y += src/test

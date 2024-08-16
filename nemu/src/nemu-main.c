@@ -13,7 +13,7 @@
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
 
-#ifdef UT
+#ifdef CONFIG_UT
 #include "unit_test/unit_test.h"
 #endif
 #include <common.h>
@@ -31,8 +31,9 @@ int main(int argc, char *argv[]) {
   init_monitor(argc, argv);
 #endif
 
-#ifdef UT
-  expr_ut();
+#ifdef CONFIG_UT
+  // expr_ut();
+  wtchpnt_ut();
   return 0;
 #endif
 

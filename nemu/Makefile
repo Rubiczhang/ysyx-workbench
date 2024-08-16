@@ -47,6 +47,7 @@ CFLAGS_BUILD += $(if $(CONFIG_CC_ASAN),-fsanitize=address,)
 CFLAGS_TRACE += -DITRACE_COND=$(if $(CONFIG_ITRACE_COND),$(call remove_quote,$(CONFIG_ITRACE_COND)),true)
 CFLAGS  += $(CFLAGS_BUILD) $(CFLAGS_TRACE) -D__GUEST_ISA__=$(GUEST_ISA)
 LDFLAGS += $(CFLAGS_BUILD)
+VALGRIND ?=
 
 # Include rules for menuconfig
 include $(NEMU_HOME)/scripts/config.mk
@@ -62,7 +63,7 @@ test: CFLAGS +=  -DUT -Wno-error=unused-function -Wno-error=unused-variable
 test: run-env
 	$(NEMU_EXEC) < temp/test_input.txt
 
-.PHONY: ut random_test sigle_test
+.PHONY: ut random-expr-test sigle_test
 
 
 sigle_test: CFLAGS += -DP_MAINOPTR -DUT -Wno-error=unused-function -Wno-error=unused-variable
@@ -71,15 +72,18 @@ sigle_test: run-env
 
 
 TEST_TARGET ?=
-ut: CFLAGS += -DUT -Wno-error=unused-function -Wno-error=unused-variable
-ut: run
+ut: CFLAGS += -Wno-error=unused-function -Wno-error=unused-variable
+ut: run-env
+	$(VALGRIND) $(NEMU_EXEC)
 
+
+gdb: CFLAGS +=  -Wno-error=unused-function -Wno-error=unused-variable
 
 ifndef TEST_LOOP
 TEST_LOOP = 100
 endif #TEST_LOOP
-random_test: CFLAGS += -DUT -Wno-error=unused-function -Wno-error=unused-variable -DTEST_LOOP=$(TEST_LOOP)
-random_test: run-env
+random-expr-test: CFLAGS += -Wno-error=unused-function -Wno-error=unused-variable -DTEST_LOOP=$(TEST_LOOP)
+random-expr-test: run-env
 #	strace -o strace_output.txt sh -c '$(NEMU_HOME)/tools/gen-expr/a.out |$(NEMU_EXEC)'
 	make app -f tools/gen-expr/Makefile  CFLAGS+=-DTEST_LOOP=$(TEST_LOOP)
 	$(NEMU_HOME)/build/gen-expr |$(NEMU_EXEC)

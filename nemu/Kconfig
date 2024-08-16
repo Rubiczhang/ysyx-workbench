@@ -126,6 +126,13 @@ endmenu
 
 menu "Testing and Debugging"
 
+config UT
+  bool "Unit Test"
+  default n
+
+config WATCHPOINT
+  bool "WATCHPOINT"
+  default n
 
 config TRACE
   bool "Enable tracer"

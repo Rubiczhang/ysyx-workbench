@@ -19,11 +19,13 @@
 #include <readline/history.h>
 #include <memory/vaddr.h>
 #include "sdb.h"
+#include <monitor/sdb/watchpoint.h>
 
 static int is_batch_mode = false;
 
 void init_regex();
 void init_wp_pool();
+
 
 /* We use the `readline' library to provide more flexibility to read from stdin. */
 static char* rl_gets() {
@@ -56,6 +58,11 @@ static int cmd_q(char *args) {
 
 static int cmd_si(char *args) ;
 
+static int cmd_wp(char* args);
+
+static int cmd_d(char *args);
+
+
 static int cmd_info(char *args){
   char *arg = strtok(NULL, " ");
   if(arg && !strcmp(arg, "r")){
@@ -66,17 +73,22 @@ static int cmd_info(char *args){
 
 static int cmd_x(char* args){
   char* n_str = strtok(NULL, " ");
-  char* addr_str = strtok(NULL, " ");
+  char* addr_str = strtok(NULL, "\n");
   if(!(n_str && addr_str)){
     printf("Wrong usage for x cmd\n");
     return 0;
   }
-  char *endptr;
+  char *endptr = NULL;
   int n = strtol(n_str, &endptr, 10);
   Assert(endptr && *endptr == '\0' , "Inner error\n");
 
-  vaddr_t addr = strtol(addr_str, &endptr, 16);
-  Assert(endptr && *endptr == '\0' , "Inner error\n");
+  bool succ = false;
+  vaddr_t addr = expr(addr_str, &succ);
+  // Assert(succ , "Inner error\n");
+  if(!succ){
+    printf("Wrong usage of x cmd, Wrong expression:%s\n", addr_str);
+    return 0;
+  }
   for(int i = 0; i < n; i++){
     word_t val = vaddr_read(addr, 4);
     printf("0x%08x ", val);
@@ -98,7 +110,9 @@ static struct {
   { "q", "Exit NEMU", cmd_q },
   { "si", "Step instrution", cmd_si },
   { "info",  "Generic command for showing things about the program being debugged.", cmd_info },
-  { "x", "Examine memory: x LENGTH ADDRESS. Output LENGHT * 32bit after ADDRESS",  cmd_x}
+  { "x", "Examine memory: x LENGTH ADDRESS. Output LENGHT * 32bit after ADDRESS",  cmd_x},
+  { "watch", "Add watch point", cmd_wp},
+  { "d", "delete break point", cmd_d}
   /* TODO: Add more commands */
 
 };
@@ -131,11 +145,11 @@ static int cmd_help(char *args) {
 static int cmd_si(char *args) {
   long long step = 1;
   char *arg = strtok(NULL, " ");
-  char *endptr;
+  char *endptr = NULL;
   
   if(arg){ //There are args
     step = strtoll(arg, &endptr,  10);
-    if(*endptr != '\0'){
+    if(!endptr || *endptr != '\0'){
       printf("%s, Step instrution format: si [N]\n e.g.: si or si 10\n"
        , ANSI_FMT(str(Wrong instr fmt), ANSI_FG_RED));
       return 0;
@@ -143,6 +157,36 @@ static int cmd_si(char *args) {
   }
   cpu_exec(step);
   return 0;
+}
+
+static int cmd_wp(char *args) {
+  char* expr = strtok(NULL, "\0");
+  if(expr == NULL){
+    printf("Wrong usage of whatchpoint\n");
+    return -1;
+  }
+  new_wp(expr);
+  return 0;
+}
+
+static int delete_wp(char* args){
+  char* no_str = strtok(NULL, " ");
+  int no = -1;
+  if(no_str == NULL){
+    printf("Wrong usage of cmd delete");
+    return -1;
+  }
+  char* endptr = NULL;
+  no = strtol(no_str, &endptr,  10);
+  if(!endptr || *endptr != '\0'){
+      printf("Wrong usage of delete wp");
+  }
+  free_wp_by_no(no);
+  return 0;
+}
+
+static int cmd_d(char* args){
+  return delete_wp(args);
 }
 
 

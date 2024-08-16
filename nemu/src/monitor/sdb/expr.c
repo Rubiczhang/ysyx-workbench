@@ -447,7 +447,6 @@ word_t expr(char *e, bool *success) {
     return 0;
   }
   *success = true;
-
   // print_tokens(tokens, 0, nr_token-1);
   word_t value = eval(tokens, 0, nr_token-1, success);
   if(*success)
