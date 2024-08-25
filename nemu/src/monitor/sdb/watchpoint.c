@@ -97,7 +97,7 @@ WP* new_wp(char* e){
     // printf("expression:%s\n", curNode->expr);
   word_t val = expr(e, &success);
   if(!success){
-    printf("Wrong Expr: %s", e); return NULL;
+    printf("Wrong Expr: %s\n", e); return NULL;
   }
   new_node->val = val;
 
@@ -164,11 +164,11 @@ void free_wp_by_no(int no){
 }
 
 void show_all_wtchpnt(WP* list){
-  printf("%-10s %-10s %-6s %s\n", "Num", "Type",  "Enb", "What");
+  printf("%-10s %-6s %s\n", "Num" ,  "Enb", "What");
   const WP* cur = list->next;
   while(cur){
     
-    printf("%-10d %-10s %-6s %s\n", cur->NO, "Type",  cur->enable?"y":"n", cur->expr);
+    printf("%-10d %-6s %s\n", cur->NO,cur->enable?"y":"n", cur->expr);
     cur = cur->next;
   }
 }

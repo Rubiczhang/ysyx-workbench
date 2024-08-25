@@ -27,17 +27,15 @@ word_t getMainOptr_UT(char *e, bool *success);
 bool make_token(char *e) ;
 
 
-#ifndef TEST_LOOP
-#define TEST_LOOP 100
-#endif
+#define MAX_LOOP 1000000
 
 #define MAX_BUF_SIZE 262104
 static char buff[MAX_BUF_SIZE];
 static char ans_buf[32];
 
-int32_t loop = TEST_LOOP;
+int32_t loop = MAX_LOOP;
 void expr_ut(void){
-    bool succ;
+    // bool succ;
     // for(int i = 0; i < sizeof(test)/sizeof(char*); i++){
     //     // getMainOptr_UT(test1[i], &succ);
     //     word_t val = expr(test[i], &succ);
@@ -55,7 +53,7 @@ void expr_ut(void){
     // }
     for(int i = 0; i < loop; i++){
         if(!fgets(buff, MAX_BUF_SIZE-1, stdin)){
-            printf("%d", buff[strlen(buff)-1]);
+            printf("%d\n", buff[strlen(buff)-1]);
             Log("Wrong input:%s", buff);
         }
         assert(buff[strlen(buff)-1] == '\n'  || //input from file
@@ -71,10 +69,11 @@ void expr_ut(void){
                 fprintf(fp, "%s", buff);
                 fclose(fp);
             }
-            // Assert(ans == eval_ans, "Wrong Ans: %u vs Right Ans %u\n expression:%s\n", eval_ans, ans, buff+strlen(ans_buf));
+            Assert(ans == eval_ans, "Wrong Ans: %u vs Right Ans %u\n expression:%s\n", eval_ans, ans, buff+strlen(ans_buf));
             Log("PASSED, Expression: %s", buff+strlen(ans_buf));
         } else{
             Log("Something Wrong Happend, Expression:%s", buff+ strlen(ans_buf));
+            break;
         }
     }
 }

@@ -22,7 +22,7 @@
 #include <regex.h>
 #include <memory/vaddr.h>
 
-
+// #define P_MAINOPTR
 enum {
   TK_NOTYPE = 256, 
   TK_EQ,
@@ -50,7 +50,7 @@ static struct rule {
   {"==", TK_EQ},        // equal
   {"0x[0-9A-Fa-f]+", TK_HINT},        // Hex int
   {"[0-9]+", TK_DINT},        // decimal int
-  {"\\$[0-9A-Za-z]+", TK_REG},
+  {"\\$[\\$0-9A-Za-z]+", TK_REG},
   {"\\!=", TK_NEQ},
   {"&&", TK_ANDAND},
   {"-", '-'},
@@ -270,12 +270,12 @@ static word_t getBinOprValue(word_t first, Token op_tk, word_t last, bool* succe
       val = first/last;
       break;
     case TK_EQ :
-      val = (first == last);
+      val = (first == last); break;
       break;
     case TK_NEQ:
-      val = (first != last);
+      val = (first != last); break;
     case TK_ANDAND:
-      val = (first && last);
+      val = (first && last); break;
   }
   // printf("%u %s %u = %u\n",first, op_tk.str, last, val);
   return val;
@@ -386,10 +386,43 @@ static int32_t getMainOprtr(Token* tokens, int beg, int end){
   return mainOprtPos;
   
 }
+static word_t eval(Token* tokens, int beg, int end, bool* success);
+
+static word_t eval_subexpr(Token* tokens, int beg, int end, bool* success){
+  word_t value;
+  int32_t mainOptrPos = getMainOprtr(tokens, beg, end);
+  if(mainOptrPos < 0 || mainOptrPos >= end){
+    // print_tokens(tokens, beg, end);
+    
+    assert(0);
+    *success = false;
+    return 0;
+  }
+    
+  word_t leftValue = 0;
+  if(mainOptrPos > beg)
+    leftValue = eval(tokens, beg, mainOptrPos-1, success);
+  Token op_token = tokens[mainOptrPos];
+  // assert(isBinOperator(op_token));
+  if(op_token.type == TK_ANDAND)
+    if(leftValue == 0)
+      return 0;
+    
+  word_t rightValue = eval(tokens, mainOptrPos+1, end, success);
+  // printf("mainOptrPos: %d  ", mainOptrPos);
+  // printf("leftValue: %d, op_token: %s, rightValue:%d\n", leftValue, op_token.str, rightValue);
+    
+  if(mainOptrPos > beg){
+    value = getBinOprValue(leftValue, op_token, rightValue, success);
+  }
+  else
+    value = getSigOprValue(op_token, rightValue);
+  return value;
+}
 
 static word_t eval(Token* tokens, int beg, int end, bool* success){
   // print_tokens(tokens, beg, end);
-  word_t value = 0;
+  uint64_t value = 0;
   Assert(beg <= end, "input of eval is illegal: beg:%d, end:%d\n",beg, end);
   if(beg == end){           //<number>
     if(! (is_number(tokens[beg]) || tokens[beg].type == TK_REG)){
@@ -399,11 +432,16 @@ static word_t eval(Token* tokens, int beg, int end, bool* success){
     if(is_number(tokens[beg]))
       value = strToNum(tokens[beg]);
     else if(tokens[beg].type == TK_REG){
-      bool succ = false;
-      value = isa_reg_str2val(tokens[beg].str+1, &succ);
-      if(!succ){
-        *success = false;
-        Log("Wrong Reg Name:%s", tokens[beg].str);
+      if(!(strcmp(tokens[beg].str, "$pc"))){
+        value = cpu.pc;
+      }
+      else{
+        bool succ = false;
+        value = isa_reg_str2val(tokens[beg].str+1, &succ);
+        if(!succ){
+          *success = false;
+          Log("Wrong Reg Name:%s", tokens[beg].str);
+        }
       }
     }
   }
@@ -412,29 +450,31 @@ static word_t eval(Token* tokens, int beg, int end, bool* success){
     value = eval(tokens, beg+1, end-1, success);
   }
   else{
-    int32_t mainOptrPos = getMainOprtr(tokens, beg, end);
-    if(mainOptrPos < 0 || mainOptrPos >= end){
-      // print_tokens(tokens, beg, end);
+    // int32_t mainOptrPos = getMainOprtr(tokens, beg, end);
+    // if(mainOptrPos < 0 || mainOptrPos >= end){
+    //   // print_tokens(tokens, beg, end);
       
-      assert(0);
-      *success = false;
-      return 0;
-    }
+    //   assert(0);
+    //   *success = false;
+    //   return 0;
+    // }
     
-    word_t leftValue = 0;
-    if(mainOptrPos > beg)
-      leftValue = eval(tokens, beg, mainOptrPos-1, success);
-    Token op_token = tokens[mainOptrPos];
-    // assert(isBinOperator(op_token));
+    // word_t leftValue = 0;
+    // if(mainOptrPos > beg)
+    //   leftValue = eval(tokens, beg, mainOptrPos-1, success);
+    // Token op_token = tokens[mainOptrPos];
+    // // assert(isBinOperator(op_token));
 
-    word_t rightValue = eval(tokens, mainOptrPos+1, end, success);
-    // printf("mainOptrPos: %d  ", mainOptrPos);
-    // printf("leftValue: %d, op_token: %s, rightValue:%d\n", leftValue, op_token.str, rightValue);
+    // word_t rightValue = eval(tokens, mainOptrPos+1, end, success);
+    // // printf("mainOptrPos: %d  ", mainOptrPos);
+    // // printf("leftValue: %d, op_token: %s, rightValue:%d\n", leftValue, op_token.str, rightValue);
     
-    if(mainOptrPos > beg)
-      value = getBinOprValue(leftValue, op_token, rightValue, success);
-    else
-      value = getSigOprValue(op_token, rightValue);
+    // if(mainOptrPos > beg){
+    //   value = getBinOprValue(leftValue, op_token, rightValue, success);
+    // }
+    // else
+    //   value = getSigOprValue(op_token, rightValue);
+    value = eval_subexpr(tokens, beg, end, success);
   }
   return value;
 
@@ -447,6 +487,7 @@ word_t expr(char *e, bool *success) {
     return 0;
   }
   *success = true;
+  printf("%s\n", e);
   // print_tokens(tokens, 0, nr_token-1);
   word_t value = eval(tokens, 0, nr_token-1, success);
   if(*success)

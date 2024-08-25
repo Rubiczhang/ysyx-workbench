@@ -20,6 +20,7 @@
 #include <memory/vaddr.h>
 #include "sdb.h"
 #include <monitor/sdb/watchpoint.h>
+#include <utils.h>
 
 static int is_batch_mode = false;
 
@@ -53,7 +54,8 @@ static int cmd_c(char *args) {
 
 static int cmd_q(char *args) {
   Log("Quit\n");
-  exit(0);
+  nemu_state.state = NEMU_QUIT;
+  return -1;
 }
 
 static int cmd_si(char *args) ;
@@ -65,8 +67,13 @@ static int cmd_d(char *args);
 
 static int cmd_info(char *args){
   char *arg = strtok(NULL, " ");
-  if(arg && !strcmp(arg, "r")){
-    isa_reg_display();
+  if(arg){
+    if(!strcmp(arg, "r")){
+      isa_reg_display();
+    }
+    if(!strcmp(arg, "b")){
+      show_all_working();
+    }
   }
   return 0;
 }

@@ -86,6 +86,5 @@ random-expr-test: CFLAGS += -Wno-error=unused-function -Wno-error=unused-variabl
 random-expr-test: run-env
 #	strace -o strace_output.txt sh -c '$(NEMU_HOME)/tools/gen-expr/a.out |$(NEMU_EXEC)'
 	make app -f tools/gen-expr/Makefile  CFLAGS+=-DTEST_LOOP=$(TEST_LOOP)
-	$(NEMU_HOME)/build/gen-expr |$(NEMU_EXEC)
-
+	$(NEMU_HOME)/build/gen-expr TEST_LOOP |   $(NEMU_EXEC) 
 endif

@@ -126,12 +126,23 @@ endmenu
 
 menu "Testing and Debugging"
 
+menu "Unit Test"
 config UT
   bool "Unit Test"
   default n
 
+config EXPR_UT
+  bool "Enable Expression unit test"
+  depends on UT && ! WTCHPNT_UT
+
+config WTCHPNT_UT
+  bool "Enable Watchpoint unit test"
+  depends on UT && WATCHPOINT
+  default n
+endmenu
+
 config WATCHPOINT
-  bool "WATCHPOINT"
+  bool "Enable watchpoint"
   default n
 
 config TRACE

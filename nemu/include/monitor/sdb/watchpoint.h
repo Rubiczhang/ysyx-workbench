@@ -14,4 +14,5 @@ typedef struct watchpoint {
 WP* new_wp(char* e);
 void free_wp_by_no(int no);
 bool check_wtchpnt_chngd();
+void show_all_working(void);
 #endif

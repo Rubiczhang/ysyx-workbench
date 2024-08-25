@@ -96,9 +96,19 @@ void gen_sig_oprator(){
 void gen_reg(){
   int32_t r = rand()%nr_regs;
   sprintf(output_buf+out_buf_len, "$%s", regs[r]);
-  sprintf(cal_buf+cal_buf_len, "%uu", 0);
+  sprintf(cal_buf+cal_buf_len, "0");
   out_buf_len = strlen(output_buf);
   cal_buf_len = strlen(cal_buf);
+}
+
+static void gen_rand_space(){
+  char buff[10];
+  int n = rand()% 4;
+  buff[n] = '\0';
+  while(--n >= 0){
+    buff[n] = ' ';
+  }
+  gen_str(buff);
 }
 
 static void gen_rand_expr(int deps) {
@@ -106,8 +116,9 @@ static void gen_rand_expr(int deps) {
     gen_num();
     return;
   }
+  gen_rand_space();
   int r = rand();
-  switch(r%6) {
+  switch(r%8) {
     case 0: 
       gen_num(); break;
     case 1:
@@ -116,6 +127,16 @@ static void gen_rand_expr(int deps) {
       gen_str(")");
       break;
     case 2:
+      gen_sig_oprator();
+      gen_rand_expr(deps+1);
+      break;
+    case 3:
+      gen_hex_num();
+      break;
+    case 4:
+      gen_reg();
+      break;
+    default:
       // gen_str("(");
       gen_rand_expr(deps+1);
       // gen_str(")");
@@ -124,15 +145,6 @@ static void gen_rand_expr(int deps) {
       gen_rand_expr(deps+1);
       // gen_str(")");
       break;
-    case 3:
-      gen_sig_oprator();
-      gen_rand_expr(deps+1);
-      break;
-    case 4:
-      gen_hex_num();
-      break;
-    case 5:
-      gen_reg();
   }
 }
 
@@ -140,39 +152,59 @@ int main(int argc, char *argv[]) {
   int seed = time(0);
   srand(seed);
   int loop = TEST_LOOP;
+
   if (argc > 1) {
     sscanf(argv[1], "%d", &loop);
   }
   int i;
+  // For log //
+  FILE* fp_log;
+  fp_log = fopen("temp/formatted_output.txt", "w");
+  ////////////
   for (i = 0; i < loop; i ++) {
     out_buf_len = 0;
     cal_buf_len = 0;
     gen_rand_expr(0);
-    // char*cal_buf;
-    // cal_buf = "((1294395022u))/ (1425416474u== 893554683u)";
+    // //for test//
+    // char* cal_buf;
+    // cal_buf = "   0x6ffb0a88u/  0 ";
+    // char* output_buf;
+    // output_buf = " 0x6ffb0a88 / $s7 ";
+    // ///////////////
     sprintf(code_buf, code_format, cal_buf);
-    // sprintf(code_buf, code_format, test_buf);
 
-    FILE *fp = fopen("/tmp/.code.c", "w");
+    FILE* fp = fopen("/tmp/.code.c", "w");
     assert(fp != NULL);
     fputs(code_buf, fp);
     fclose(fp);
 
-    int ret = system("gcc /tmp/.code.c -o /tmp/.expr");
-    if (ret != 0) continue;
+    int ret = system("gcc /tmp/.code.c -o /tmp/.expr -Werror=div-by-zero");
 
-    fp = popen("/tmp/.expr", "r");
+    if (ret != 0){
+      fprintf(stderr, "Divided by 0\n");
+      continue;
+    }
+
+    fp = popen("/tmp/.expr 2>&1", "r");
     assert(fp != NULL);
 
     int result;
     fscanf(fp, "%u", &result);
-    pclose(fp);
+    ret = pclose(fp);
     // setvbuf(stdout, NULL, _IONBF, 0);
     // if(ret !=0 ) {
-    //   // printf("Div-0: %u %s\n",result, output_buf);
+    //   printf("Div-0: %u %s\n",result, output_buf);
     //   continue;
     // }
     printf("%u %s\n", result, output_buf);
+    // TEST LOG
+    fputs(output_buf, fp_log);
+    fputs("\n", fp_log);
+    fputs(cal_buf, fp_log);
+    fputs("\n", fp_log);
+    //////////////
   }
+
+  fclose(fp_log);
   return 0;
 }
