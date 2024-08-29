@@ -8,9 +8,9 @@ module ps2_keyboard(clk,clrn,ps2_clk,ps2_data,data,
 
     input clk,clrn;
     input ps2_clk,ps2_data;
-    input nextdata_n;
+    input nextdata_n;      //read_vld
     output [7:0] data;
-    output reg ready;
+    output reg ready;        // not (FIFO empty)
     output reg overflow;     // fifo overflow
     // internal signal, for test
     reg [9:0] buffer;        // ps2_data bits
@@ -32,7 +32,7 @@ module ps2_keyboard(clk,clrn,ps2_clk,ps2_data,data,
         end
         else begin
             if ( ready ) begin // read to output next data
-                if(nextdata_n == 1'b0) //read next data
+                if(nextdata_n == 1'b0) //cpu read next data
                 begin
                     r_ptr <= r_ptr + 3'b1;
                     if(w_ptr==(r_ptr+1'b1)) //empty
@@ -47,7 +47,7 @@ module ps2_keyboard(clk,clrn,ps2_clk,ps2_data,data,
                     fifo[w_ptr] <= buffer[8:1];  // kbd scan code
                     w_ptr <= w_ptr+3'b1;
                     ready <= 1'b1;
-                    overflow <=  (r_ptr == (w_ptr + 3'b1));
+                    overflow <=  overflow | (r_ptr == (w_ptr + 3'b1));
                 end
                 count <= 0;     // for next
               end else begin

@@ -100,11 +100,11 @@ void testCase1(VTOP* top){
     // assert(0);
     unsigned int fmt_data;
         //test fmtPs2Data
-        assert(getOddParity(0x11) == 1);
+    assert(getOddParity(0x11) == 1);
     
-        ps2_data = 0x11;
-        fmt_data = fmtPs2Data(ps2_data);
-        assert(fmt_data == 0x622);
+    ps2_data = 0x11;
+    fmt_data = fmtPs2Data(ps2_data);
+    assert(fmt_data == 0x622);
     sendToPs2(top, 0x11);
     top->eval();
     tick_eval_dump(top, 10);
