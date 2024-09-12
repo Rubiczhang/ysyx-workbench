@@ -40,7 +40,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #endif
 #ifdef CONFIG_WATCHPOINT
   if(wtchpntWorking){
-    if(check_wtchpnt_chngd()){
+    if(check_wtchpnt_chngd(_this)){
       if(nemu_state.state == NEMU_RUNNING)
         nemu_state.state = NEMU_STOP;
     }
@@ -56,6 +56,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
   s->snpc = pc;
   isa_exec_once(s);
   cpu.pc = s->dnpc;
+  // Assert(s->dnpc == 0x88fffffc, "s->pc: %x", s->pc);
 #ifdef CONFIG_ITRACE
   char *p = s->logbuf;
   p += snprintf(p, sizeof(s->logbuf), FMT_WORD ":", s->pc);

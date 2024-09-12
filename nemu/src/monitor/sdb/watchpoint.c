@@ -181,7 +181,7 @@ void show_all_working(){
   show_all_wtchpnt(head);
 }
 
-bool check_wtchpnt_chngd(){  
+bool check_wtchpnt_chngd(Decode* _this){  
 // output infomation of the first changed watchpnt
   int max_loop = NR_WP+1;
   WP* curNode = head->next;
@@ -205,9 +205,13 @@ bool check_wtchpnt_chngd(){
   if(changed){
     assert(chngdNode);
     printf("Hardware watchpoint %d: %s\n", chngdNode->NO, chngdNode->expr);
-    printf("Old value = %x\n", chngdNode->val);
+    printf("at: 0x%x with inst: ", _this->pc);
+
+    printf("0x%08x\n",  vaddr_read(_this->pc, 4));
+
+    printf("Old value = 0x%x\n", chngdNode->val);
     chngdNode->val = val;
-    printf("New value = %x\n", chngdNode->val);
+    printf("New value = 0x%x\n", chngdNode->val);
   }
   return changed;
 }

@@ -1,6 +1,9 @@
 #ifndef __WATCHPOINT__H__
 #define __WATCHPOINT__H__
 #define MAX_EXPRESSION_LEN 2048
+
+#include <cpu/decode.h>
+#include <memory/vaddr.h>
 typedef struct watchpoint {
   int NO;
   struct watchpoint *next;
@@ -13,6 +16,6 @@ typedef struct watchpoint {
 
 WP* new_wp(char* e);
 void free_wp_by_no(int no);
-bool check_wtchpnt_chngd();
+bool check_wtchpnt_chngd(Decode* _this);
 void show_all_working(void);
 #endif

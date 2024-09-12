@@ -48,7 +48,7 @@ static char* rl_gets() {
 
 static int cmd_c(char *args) {
   cpu_exec(-1);
-  return 0;
+  return -1;
 }
 
 
@@ -78,9 +78,25 @@ static int cmd_info(char *args){
   return 0;
 }
 
+static int cmd_p(char* args){
+  char* expr_str = strtok(NULL, "\0");
+  if(!expr_str){
+    printf("Wrong usage for p cmd\n");
+    return 0;
+  }
+  bool succ = false;
+  word_t val= expr(expr_str, &succ);
+  if(!succ){
+    printf("Wrong usage of p cmd, Wrong expression:%s\n", expr_str);
+    return 0;
+  }
+  printf("0x%08x\n", val);
+  return 0;
+}
+
 static int cmd_x(char* args){
   char* n_str = strtok(NULL, " ");
-  char* addr_str = strtok(NULL, "\n");
+  char* addr_str = strtok(NULL, "\0");
   if(!(n_str && addr_str)){
     printf("Wrong usage for x cmd\n");
     return 0;
@@ -119,7 +135,8 @@ static struct {
   { "info",  "Generic command for showing things about the program being debugged.", cmd_info },
   { "x", "Examine memory: x LENGTH ADDRESS. Output LENGHT * 32bit after ADDRESS",  cmd_x},
   { "watch", "Add watch point", cmd_wp},
-  { "d", "delete break point", cmd_d}
+  { "d", "delete break point", cmd_d},
+  { "p", "Print value of expression", cmd_p}
   /* TODO: Add more commands */
 
 };

@@ -424,7 +424,7 @@ static word_t eval(Token* tokens, int beg, int end, bool* success){
   // print_tokens(tokens, beg, end);
   uint64_t value = 0;
   Assert(beg <= end, "input of eval is illegal: beg:%d, end:%d\n",beg, end);
-  if(beg == end){           //<number>
+  if(beg == end){           //<number> | <reg>
     if(! (is_number(tokens[beg]) || tokens[beg].type == TK_REG)){
       assert(0);
       *success = false;
@@ -487,7 +487,7 @@ word_t expr(char *e, bool *success) {
     return 0;
   }
   *success = true;
-  printf("%s\n", e);
+  // printf("%s\n", e);
   // print_tokens(tokens, 0, nr_token-1);
   word_t value = eval(tokens, 0, nr_token-1, success);
   if(*success)

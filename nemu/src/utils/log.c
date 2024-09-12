@@ -23,7 +23,13 @@ FILE *log_fp = NULL;
 void init_log(const char *log_file) {
   log_fp = stdout;
   if (log_file != NULL) {
+
+#ifdef CONFIG_BATCH_ITRACE
+    FILE *fp = fopen(log_file, "a");
+#else
     FILE *fp = fopen(log_file, "w");
+#endif
+
     Assert(fp, "Can not open '%s'", log_file);
     log_fp = fp;
   }
