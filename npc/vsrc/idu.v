@@ -15,7 +15,7 @@ module idu(
   output [DYN_INST_WIDTH-1 : 0] dyn_instr_exu_o
 );
 
-
+import "DPI-C" function void handle_ebreak();
 
 
 wire    [OPCD_LEN_STA-1   : 0]     opcode;
@@ -102,6 +102,15 @@ always @(*) begin
         instr_type = I_SHIFT_INSTR;
       else if(func3 != SLLI_FUNC3 && func3 != SRAI_FUNC3) begin
         instr_type = I_COMPU_INSTR;
+      end
+    end
+
+    I_E_OPCODE:     begin
+      if(instr_ifu_i[31:7] == I_ECALL_HIGHER)
+        instr_type = I_ECALL_INSTR;
+      else if(instr_ifu_i[31:7] == I_EBREAK_HIGHER) begin
+        instr_type = I_EBREAK_INSTR;
+        handle_ebreak();
       end
     end
 

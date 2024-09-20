@@ -1,8 +1,9 @@
 #include "npc_tb.hh"
+#include <iostream>
 
 uint32_t host_mem[1024];
 
-const uint32_t addi_test_mem[] = {0x00140413,  0x00140413, 0x00140413};
+const uint32_t addi_test_mem[] = {0x00140413,  0x00140413, 0x00140413, 0x00100073	};
 
 uint32_t paddr2host_addr(int paddr){
   return(paddr - 0x80000000);
@@ -39,6 +40,11 @@ void cpu_tick(Vtop *top, int n){
   }
 }
 
+extern "C" void handle_ebreak(){
+  std::cout << "EBREAK encountered!" <<std::endl;
+  exit_routine();
+  exit(0);
+}
 
 void reset(Vtop* top){
   top->rst_n = 0;
@@ -49,7 +55,7 @@ void reset(Vtop* top){
 
 
 void init_mem(Vtop* top){
-  for(int i = 0; i < sizeof(addi_test_mem); i++){
+  for(int i = 0; i < (sizeof(addi_test_mem)/4); i++){
     top->pmm_reset[i] = addi_test_mem[i];
   }
   top->rst_n = 0;

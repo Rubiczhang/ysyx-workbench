@@ -28,7 +28,7 @@ VSRCS := $(wildcard $(PROJECT_ROOT)/vsrc/*)
 VERILOG_INCPATH = $(abspath ./vsrc)
 VERILOG_INCFLAGS = $(addprefix -I, $(VERILOG_INCPATH))
 
-VERILATOR_FLAGS = --cc --exe --build
+VERILATOR_FLAGS = --cc --exe --build 
 VERILATOR_TRACE_FLAGS = --trace-fst 
 TOP = top
 

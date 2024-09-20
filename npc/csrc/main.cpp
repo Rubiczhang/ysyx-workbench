@@ -13,26 +13,28 @@
 #include "verilated_fst_c.h"
 #endif  //TRACE_ENABLE
 
+void exit_routine(){
+    #ifdef TRACE_ENABLE
+        if(tfp){
+            tfp->flush();
+            tfp->close();
+        }
+    #endif
+}
 
 #ifdef TRACE_ENABLE
 VerilatedFstC* tfp;
 
 void exit_handler(int signum){
     // assert(signum == SIGINT);
-    if(tfp){
-        tfp->flush();
-        tfp->close();
-    }
+    exit_routine();
     std::cout<< "exiting\n" ;
     exit(0);
 }
 
 void assert_with_wave(bool x){
     if(!x){
-        if(tfp){
-            tfp->flush();
-            tfp->close();
-        }
+        exit_routine();
     }
     assert(x);
 }
@@ -70,11 +72,6 @@ int main(int argc, char** argv){
 #endif
     npc_tb(top.get());
 
-#ifdef TRACE_ENABLE
-    if(tfp){
-        tfp->flush();
-        tfp->close();
-    }
-#endif
+    exit_routine();
     return 0;
 }
