@@ -21,6 +21,7 @@ char *strcpy(char *dst, const char *src) {
   for(; i < MAX_BUF_LEN && src[i] != '\0'; i++){
     dst[i] = src[i];
   }
+  dst[i] = '\0';
   if(i == MAX_BUF_LEN)
     panic("Wrong usage of strcpy");
   return dst;
@@ -28,8 +29,10 @@ char *strcpy(char *dst, const char *src) {
 
 char *strncpy(char *dst, const char *src, size_t n) {
   int i = 0;
-  for(; i < n && src[i] != '\0'; i++){
+  for(; i < n ; i++){
     dst[i] = src[i];
+    if(src[i] == '\0')
+      break;
   }
   for(; i < n; i++)
     dst[i] = '\0';
@@ -49,6 +52,18 @@ char *strcat(char *dst, const char *src) {
   dst[j] = '\0';
   return dst;
 }
+
+// char *strncat(char *dst, const char *src, size_t n) {
+//   int lenSrc= strlen(src);
+//   int loop_n = lenSrc < n ? lenSrc : n;
+//   int lenDst= strlen(dst);
+//   int j = lenDst;
+//   for(int i = 0 ; i <loop_n;){
+//     dst[j++] = src[i++];
+//   }
+//   dst[j] = '\0';
+//   return dst;
+// }
 
 int strcmp(const char *s1, const char *s2) {
   int ans = 0;
