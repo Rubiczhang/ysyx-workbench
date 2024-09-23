@@ -19,6 +19,31 @@ int abs(int x) {
   return (x < 0 ? -x : x);
 }
 
+int itoa(int x, char* str, int base){
+  if(x == 0){
+    str[0] = '0';
+    str[1] = '\0';
+    return 1;
+  }
+  //return the number of converted digits.
+  bool negFlag = (x < 0);
+  x = abs(x);
+  int len = 0;
+  while(x != 0){
+    char ascii_base = (x % base < 10)? '0' : ('A'-10);
+    str[len++] = x % base +  ascii_base;
+    x = x / base;
+  }
+  if(negFlag) str[len++] = '-';
+  for(int j = 0; j < len/2; j++){
+    char temp = str[j];
+    str[j] = str[len-j - 1]; 
+    str[len-j-1] = temp;
+  }
+  str[len] = '\0';
+  return len;
+}
+
 int atoi(const char* nptr) {
   int x = 0;
   while (*nptr == ' ') { nptr ++; }
