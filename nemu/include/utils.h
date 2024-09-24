@@ -73,5 +73,19 @@ uint64_t get_time();
     log_write(__VA_ARGS__); \
   } while (0)
 
+#if  defined(CONFIG_ITRACE_COND) && defined(CONFIG_IRINGBUF)
+#define ITRACE_MAX_LEN 256
+typedef struct {
+  char  str_buf[CONFIG_IRINGBUFSIZE][ITRACE_MAX_LEN];
+  int hdr;
+  bool fulled;
+} iring_buf_t;
+
+extern iring_buf_t iring_buf;
+
+void flush_iring_buf();
+
+#endif  // defined(CONFIG_ITRACE_COND) && defined(CONFIG_IRINGBUF)
+
 
 #endif

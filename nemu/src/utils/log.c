@@ -40,4 +40,20 @@ bool log_enable() {
   return MUXDEF(CONFIG_TRACE, (g_nr_guest_inst >= CONFIG_TRACE_START) &&
          (g_nr_guest_inst <= CONFIG_TRACE_END), false);
 }
-#endif
+
+
+#if  defined(CONFIG_ITRACE_COND) && defined(CONFIG_IRINGBUF)
+void flush_iring_buf(){
+  int hdr = iring_buf.hdr;
+  if(iring_buf.fulled){
+    for(int i = hdr + 1; i < CONFIG_IRINGBUFSIZE; i++){
+      log_write("%s\n", iring_buf.str_buf[i]);
+    }
+  }
+  for(int i = 0; i < hdr; i++){
+      log_write("%s\n", iring_buf.str_buf[i]);
+  }
+}
+#endif //defined(CONFIG_ITRACE_COND) && defined(CONFIG_IRINGBUF)
+
+#endif  //CONFIG_TRAGET_AM

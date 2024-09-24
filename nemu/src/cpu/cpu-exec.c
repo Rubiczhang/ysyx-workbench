@@ -27,16 +27,27 @@
 #define MAX_INST_TO_PRINT 10
 extern bool wtchpntWorking;
 
+#if  defined(CONFIG_ITRACE_COND) && defined(CONFIG_IRINGBUF)
+iring_buf_t iring_buf;
+#endif
+
 CPU_state cpu = {};
 uint64_t g_nr_guest_inst = 0;
 static uint64_t g_timer = 0; // unit: us
 static bool g_print_step = false;
 
+
 void device_update();
 
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
-#ifdef CONFIG_ITRACE_COND
-  if (ITRACE_COND) { log_write("%s\n", _this->logbuf); }
+#if  defined(CONFIG_ITRACE_COND) && defined(CONFIG_IRINGBUF)
+  strncpy(iring_buf.str_buf[iring_buf.hdr], _this->logbuf, ITRACE_MAX_LEN);
+  iring_buf.hdr = (iring_buf.hdr + 1) % CONFIG_IRINGBUFSIZE;
+  if(iring_buf.hdr == 0)
+    iring_buf.fulled = true;
+
+#elif  defined(CONFIG_ITRACE_COND)
+  log_write("%s\n", _this->logbuf); 
 #endif
 #ifdef CONFIG_WATCHPOINT
   if(wtchpntWorking){
@@ -59,7 +70,9 @@ static void exec_once(Decode *s, vaddr_t pc) {
   // Assert(s->dnpc == 0x88fffffc, "s->pc: %x", s->pc);
 #ifdef CONFIG_ITRACE
   char *p = s->logbuf;
-  p += snprintf(p, sizeof(s->logbuf), FMT_WORD ":", s->pc);
+  int len = strlen(s->logbuf);
+  p += len;
+  p += snprintf(p, sizeof(s->logbuf)-len, FMT_WORD ":", s->pc);
   int ilen = s->snpc - s->pc;
   int i;
   uint8_t *inst = (uint8_t *)&s->isa.inst.val;
@@ -125,6 +138,7 @@ void cpu_exec(uint64_t n) {
   uint64_t timer_end = get_time();
   g_timer += timer_end - timer_start;
 
+  IFDEF(CONFIG_IRINGBUF, flush_iring_buf());
   switch (nemu_state.state) {
     case NEMU_RUNNING: nemu_state.state = NEMU_STOP; break;
 

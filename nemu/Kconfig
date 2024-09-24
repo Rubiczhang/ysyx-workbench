@@ -145,6 +145,8 @@ config WATCHPOINT
   bool "Enable watchpoint"
   default n
 
+menu "Trace"
+
 config TRACE
   bool "Enable tracer"
   default y
@@ -164,6 +166,16 @@ config ITRACE
   bool "Enable instruction tracer"
   default y
 
+config IRINGBUF
+  depends on ITRACE
+  bool "Enable instruction trace ring buffer"
+  default y
+
+config IRINGBUFSIZE
+  depends on IRINGBUF
+  int "Size of instrution trace ring buffer"
+  default 1000
+
 config ITRACE_COND
   depends on ITRACE
   string "Only trace instructions when the condition is true"
@@ -173,6 +185,8 @@ config BATCH_ITRACE
   depends on ITRACE
   bool "Trace without flush the log file"
   default n
+
+endmenu
 
 config DIFFTEST
   depends on TARGET_NATIVE_ELF

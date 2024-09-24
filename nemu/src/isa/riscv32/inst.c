@@ -177,17 +177,17 @@ static int decode_exec(Decode *s) {
   INSTPAT_END();
 
 #ifdef CONFIG_ITRACE_COND
-  char buff[512];
-  char *p = buff;
-  p += snprintf(p, sizeof(buff), "-----begin-------------\n");
+  char *p = s->logbuf;
+  char *buff = s->logbuf;
+  p += snprintf(p, sizeof(s->logbuf), "-----begin-------------\n");
   uint32_t i = s->isa.inst.val;
   int rs1 = BITS(i, 19, 15);
   int rs2 = BITS(i, 24, 20);
-  p += snprintf(p, sizeof(buff)-(p-buff), "rs1: $%s: %08x, rs2: $%s: %08x, imm: %d\n", 
+  p += snprintf(p, sizeof(s->logbuf)-(p-buff), "rs1: $%s: %08x, rs2: $%s: %08x, imm: %d\n", 
                 reg_name(rs1), src1, reg_name(rs2), src2, imm);
-  p += snprintf(p, sizeof(buff) - (p-buff), "s->dnpc: %08x\n",  s->dnpc);
+  p += snprintf(p, sizeof(s->logbuf) - (p-buff), "s->dnpc: %08x\n",  s->dnpc);
   if(load_flag){
-    p += snprintf(p, sizeof(buff) - (p-buff), "R(%s)<-Mem(0x%08x): 0x%08x\n", reg_name(rd), src1+imm, R(rd));
+    p += snprintf(p, sizeof(s->logbuf) - (p-buff), "R(%s)<-Mem(0x%08x): 0x%08x\n", reg_name(rd), src1+imm, R(rd));
   } else if(store_flag){
     word_t mask = 0;
     switch(store_len){
@@ -199,11 +199,11 @@ static int decode_exec(Decode *s) {
         mask = -1;  break;
     }
     int rs2 = BITS(i, 24, 20);
-    p += snprintf(p, sizeof(buff) - (p-buff), "Mem(0x%08x) <- R(%s): 0x%08x\n", src1+imm, reg_name(rs2), mask & src2);
+    p += snprintf(p, sizeof(s->logbuf) - (p-buff), "Mem(0x%08x) <- R(%s): 0x%08x\n", src1+imm, reg_name(rs2), mask & src2);
   } else{
-    p += snprintf(p, sizeof(buff) - (p-buff), "R(%s) <- 0x%08x\n",reg_name(rd), R(rd));
+    p += snprintf(p, sizeof(s->logbuf) - (p-buff), "R(%s) <- 0x%08x\n",reg_name(rd), R(rd));
   }
-  log_write("%s", buff);
+  // log_write("%s", s->logbuf);
 #endif
 
   R(0) = 0; // reset $zero to 0
