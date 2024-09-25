@@ -186,6 +186,12 @@ config BATCH_ITRACE
   bool "Trace without flush the log file"
   default n
 
+
+config MTRACE
+  depends on TRACE && TARGET_NATIVE_ELF && ENGINE_INTERPRETER
+  bool "Enable memory tracer"
+  default y
+
 endmenu
 
 config DIFFTEST

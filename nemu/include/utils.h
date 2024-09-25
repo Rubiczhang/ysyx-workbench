@@ -56,13 +56,30 @@ uint64_t get_time();
 
 #define ANSI_FMT(str, fmt) fmt str ANSI_NONE
 
+typedef enum{
+  I_TRACE,
+  M_TRACE,
+  F_TRACE
+} trace_type_t;
+
 #define log_write(...) IFDEF(CONFIG_TARGET_NATIVE_ELF, \
   do { \
-    extern FILE* log_fp; \
+    extern FILE** log_fps; \
     extern bool log_enable(); \
     if (log_enable()) { \
-      fprintf(log_fp, __VA_ARGS__); \
-      fflush(log_fp); \
+      fprintf(log_fps[I_TRACE], __VA_ARGS__); \
+      fflush(log_fps[I_TRACE]); \
+    } \
+  } while (0) \
+)
+
+#define xlog_write(trace_type, ...) IFDEF(CONFIG_TARGET_NATIVE_ELF, \
+  do { \
+    extern FILE** log_fps; \
+    extern bool xlog_enable(trace_type_t); \
+    if (xlog_enable(trace_type)) { \
+      fprintf(log_fps[trace_type], __VA_ARGS__); \
+      fflush(log_fps[trace_type]); \
     } \
   } while (0) \
 )

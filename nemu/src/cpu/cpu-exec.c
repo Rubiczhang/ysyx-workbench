@@ -45,7 +45,6 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   iring_buf.hdr = (iring_buf.hdr + 1) % CONFIG_IRINGBUFSIZE;
   if(iring_buf.hdr == 0)
     iring_buf.fulled = true;
-
 #elif  defined(CONFIG_ITRACE_COND)
   log_write("%s\n", _this->logbuf); 
 #endif
