@@ -14,6 +14,9 @@
 ***************************************************************************************/
 
 #include <common.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <errno.h>
 
 extern uint64_t g_nr_guest_inst;
 
@@ -36,7 +39,9 @@ static void init_xlog(FILE** log_fp, char* log_file ){
 }
 
 void init_log(const char *log_dir) {
-
+  if(mkdir(log_dir, 0755) == -1){
+    Assert(errno == EEXIST, "can not mkdir: %s", log_dir);
+  }
   log_fps = malloc(sizeof(FILE*)*3);
   Assert(log_fps != NULL, "malloc error\n");
   char log_files[3][128];
@@ -44,6 +49,7 @@ void init_log(const char *log_dir) {
   for(int i = 0; i < 3; i++){
     sprintf(log_files[i], "%s/%c_trace.log", log_dir, imf[i]);
   }
+  
   for(int i = 0; i <= F_TRACE; i++)
     init_xlog(log_fps+i, log_files[i]);
 

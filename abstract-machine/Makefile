@@ -90,7 +90,6 @@ CFLAGS   += -O2 -MMD -Wall -Werror $(INCFLAGS) \
 CXXFLAGS +=  $(CFLAGS) -ffreestanding -fno-rtti -fno-exceptions
 ASFLAGS  += -MMD $(INCFLAGS)
 LDFLAGS  += -z noexecstack
-LDFLAGS  += --trace-symbol=va_arg
 
 ## 4. Arch-Specific Configurations
 
@@ -149,7 +148,7 @@ image: image-dep
 archive: $(ARCHIVE)
 image-dep: $(OBJS) $(LIBS)
 	@echo \# Creating image [$(ARCH)]
-.PHONY: image image-dep archive run $(LIBS)
+.PHONY: image image-dep archive run run_elf $(LIBS)
 
 ### Clean a single project (remove `build/`)
 clean:
