@@ -105,4 +105,6 @@ void flush_iring_buf();
 #endif  // defined(CONFIG_ITRACE_COND) && defined(CONFIG_IRINGBUF)
 
 
+void log_ftrace_jalr(uint32_t des, uint32_t this_pc, uint32_t rd, uint32_t rs1);
+void log_ftrace_jal(uint32_t des, uint32_t this_pc, uint32_t rd);
 #endif

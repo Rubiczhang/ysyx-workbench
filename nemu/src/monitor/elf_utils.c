@@ -1,7 +1,6 @@
 #include <monitor/elf_utils.h>
 #define MAX_SHNAME_LEN 256
 
-Addr2Sym* addr2sym_tab;
 
 static int elf_read_eident(FILE* fp, unsigned char* e_ident_buf){
 //return 32 if ELF32, 64 if ELF64, 0 if Invalid
@@ -135,17 +134,23 @@ int read_elf_symtab(FILE* fp,const Elf32_Ehdr* hdr_p, const Elf32_Shdr* elf_shdr
 }
 
 
-void build_addr2sym_tab(Elf32_Sym* symtab, char* strtab, int nr_symtab){
+void build_addr2fname_tab(Elf32_Sym* symtab, char* strtab, int nr_symtab){
   addr2sym_tab = malloc(sizeof(Addr2Sym)*nr_symtab);
+
   for(int i = 0; i < nr_symtab; i++){
-    addr2sym_tab[i].addr = symtab[i].st_value;
-    addr2sym_tab[i].name= symtab[i].st_name + strtab;
+    // printf("%d\n", (int)symtab[i].st_info);
+    if(ELF32_ST_TYPE(symtab[i].st_info) != STT_FUNC)
+      continue;
+    addr2sym_tab[elf_nr_func].addr_lo = symtab[i].st_value;
+    addr2sym_tab[elf_nr_func].addr_hi = symtab[i].st_value + symtab[i].st_size;
+    addr2sym_tab[elf_nr_func].name= symtab[i].st_name + strtab;
+    elf_nr_func++;
   }
 }
 
-char* get_sym_name(Elf32_Addr v_addr, int nr_sym){
-  for(int i = 0; i < nr_sym; i++){
-    if(v_addr == addr2sym_tab[i].addr){
+char* get_fname(Elf32_Addr v_addr, int elf_nr_func){
+  for(int i = 0; i < elf_nr_func; i++){
+    if(v_addr >= addr2sym_tab[i].addr_lo && v_addr < addr2sym_tab[i].addr_hi){
       return addr2sym_tab[i].name;
     }
   }
@@ -153,16 +158,15 @@ char* get_sym_name(Elf32_Addr v_addr, int nr_sym){
 }
 
 
-int load_segments(FILE* fp,const Elf32_Phdr* elf_phdrs, const Elf32_Shdr* elf_shdrs, int nr_phdr){
 //ret is about file size, not memory size
+int load_segments(FILE* fp,const Elf32_Phdr* elf_phdrs, const Elf32_Shdr* elf_shdrs, int nr_phdr){
   int ret = 0;
   for(int i = 0; i < nr_phdr; i++){
-    // printf("Hello\n");
     uint32_t memsz = elf_phdrs[i].p_memsz;
     uint32_t filesz = elf_phdrs[i].p_filesz;
     uint32_t vaddr = elf_phdrs[i].p_vaddr;
     uint32_t off = elf_phdrs[i].p_offset;
-    printf("memsz: %x, filesz: %x, vaddr: %x\n", memsz, filesz, vaddr);
+    // printf("memsz: %x, filesz: %x, vaddr: %x\n", memsz, filesz, vaddr);
     fseek(fp, off, SEEK_SET);
     ret += fread(guest_to_host(vaddr), filesz < memsz ? filesz: memsz, 1, fp);
     if(memsz > filesz){

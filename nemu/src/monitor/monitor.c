@@ -25,6 +25,13 @@ void init_device();
 void init_sdb();
 void init_disasm(const char *triple);
 
+
+char* strtab = NULL;
+char* shstrtab = NULL;
+Addr2Sym* addr2sym_tab;
+int elf_nr_func = 0;
+int elf_nr_sym, elf_nr_phdr, elf_nr_shdr;
+
 static void welcome() {
   Log("Trace: %s", MUXDEF(CONFIG_TRACE, ANSI_FMT("ON", ANSI_FG_GREEN), ANSI_FMT("OFF", ANSI_FG_RED)));
   IFDEF(CONFIG_TRACE, Log("If trace is enabled, a log file will be generated "
@@ -70,17 +77,17 @@ static long load_elf(FILE* fp){
   Elf32_Phdr* elf_phdrs = NULL;
   Elf32_Shdr* elf_shdrs = NULL;
   Elf32_Sym* elf_symtab = NULL;
-  int nr_sym, nr_phdr, nr_shdr;
-  char* strtab = NULL;
-  char* shstrtab = NULL;
   int ret;
   //load to host memory
-  ret = read_elf_hdrs(fp, &hdr, &elf_phdrs, &elf_shdrs, &shstrtab, &strtab, &elf_symtab, &nr_phdr, &nr_shdr);
-  ret += read_elf_symtab(fp, &hdr, elf_shdrs,  strtab, shstrtab, &elf_symtab, &nr_sym);
+  ret = read_elf_hdrs(fp, &hdr, &elf_phdrs, &elf_shdrs, &shstrtab, &strtab, &elf_symtab, &elf_nr_phdr, &elf_nr_shdr);
+  ret += read_elf_symtab(fp, &hdr, elf_shdrs,  strtab, shstrtab, &elf_symtab, &elf_nr_sym);
 
-  build_addr2sym_tab(elf_symtab, strtab, nr_sym);
+  build_addr2fname_tab(elf_symtab, strtab, elf_nr_sym);
 
-  load_segments(fp, elf_phdrs, elf_shdrs, nr_phdr);
+  load_segments(fp, elf_phdrs, elf_shdrs, elf_nr_phdr);
+  free(elf_phdrs);
+  free(elf_shdrs);
+  free(elf_symtab);
   return ret;
 }
 
