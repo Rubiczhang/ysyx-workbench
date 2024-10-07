@@ -13,11 +13,20 @@
 # See the Mulan PSL v2 for more details.
 #**************************************************************************************/
 
+SIM_UTIL_DIR =  ../sim-utils
+
+include $(SIM_UTIL_DIR)/filelist.mk
+DIRS-y += $(addprefix $(SIM_UTIL_DIR)/, $(UTILS_SRCS_DIR))
+
 SRCS-y += src/nemu-main.c
 DIRS-y += src/cpu src/monitor src/utils
 DIRS-$(CONFIG_UT) += src/test
 DIRS-$(CONFIG_MODE_SYSTEM) += src/memory
 DIRS-BLACKLIST-$(CONFIG_TARGET_AM) += src/monitor/sdb
+
+# temp modification, src/monitor and src/monitor/sdb would be deleted.
+DIRS-BLACKLIST-y += src/monitor src/monitor/sdb				
+INC_PATH += $(SIM_UTIL_DIR)/$(UTILS_INC_PATH)
 
 SHARE = $(if $(CONFIG_TARGET_SHARE),1,0)
 LIBS += $(if $(CONFIG_TARGET_NATIVE_ELF),-lreadline -ldl -pie,)

@@ -1,0 +1,2 @@
+UTILS_SRCS_DIR =  src
+UTILS_INC_PATH = include
