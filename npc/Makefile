@@ -45,6 +45,8 @@ VERILATOR_BASEOPTION = $(VSRCS) $(CSRCS) $(SRC_AUTO_BIND) $(abspath $(NVBOARD_AR
 					--top $(TOP)  \
 					$(VERILATOR_FLAGS)
 VERILATOR_DEBUG = --debug --gdbbt
+IMG ?=
+ARGS ?=
 
 all:
 
@@ -52,12 +54,13 @@ all:
 
 .PHONY: sim clean board run
 
+
 sim: $(VSRCS) $(CSRCS) $(SRC_AUTO_BIND) $(NVBOARD_ARCHIVE) 
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	verilator $(VERILATOR_BASEOPTION) 
 
 run: sim
-	$(OBJ_DIR)/Vtop
+	$(OBJ_DIR)/Vtop $(IMG) $(ARGS)
 
 veri_debug: VERILATOR_BASEOPTION += $(VERILATOR_DEBUG)
 veri_debug: sim

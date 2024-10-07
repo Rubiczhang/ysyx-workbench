@@ -25,7 +25,7 @@ image: $(IMAGE).elf
 run: image
 	$(MAKE) -C $(NEMU_HOME) ISA=$(ISA) run ARGS="$(NEMUFLAGS)" IMG=$(IMAGE).bin
 
-run_elf: NEMUFLAGS += --w elf
+run_elf: NEMUFLAGS += -w elf
 run_elf: image
 	$(MAKE) -C $(NEMU_HOME) ISA=$(ISA) run ARGS="$(NEMUFLAGS)" IMG=$(IMAGE).elf 
 
@@ -36,6 +36,6 @@ gdb: image
 	$(MAKE) -C $(NEMU_HOME) ISA=$(ISA) gdb ARGS="$(NEMUFLAGS)" IMG=$(IMAGE).bin
 
 
-gdb_elf: NEMUFLAGS += --w elf
+gdb_elf: NEMUFLAGS += -w elf
 gdb_elf: image
 	$(MAKE) -C $(NEMU_HOME) ISA=$(ISA)  gdb ARGS="$(NEMUFLAGS)" IMG=$(IMAGE).elf 

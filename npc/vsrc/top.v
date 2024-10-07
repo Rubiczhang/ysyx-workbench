@@ -2,7 +2,8 @@
 module top(
   input clk,
   input rst_n,
-  input [DATA_WIDTH-1:0] pmm_reset [0: MEM_SIZE-1]
+  // input [DATA_WIDTH-1:0] pmm_reset [0: MEM_SIZE-1]
+  input [7:0] pmm_reset [0: MEM_SIZE-1]
 
 );
 

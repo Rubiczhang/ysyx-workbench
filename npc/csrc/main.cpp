@@ -57,8 +57,8 @@ int main(int argc, char** argv){
 #endif
     const std::unique_ptr<Vtop> top{new Vtop{contextp.get(), "TOP"}};
 
-    nvboard_bind_all_pins(top.get());
-    nvboard_init();
+    // nvboard_bind_all_pins(top.get());
+    // nvboard_init();
 #ifdef TRACE_ENABLE
     top->contextp()->traceEverOn(true);
     const char* flag = Verilated::commandArgsPlusMatch("trace");
@@ -70,8 +70,9 @@ int main(int argc, char** argv){
         tfp->open("logs/vlt_dump.fst");
     }
 #endif
-    npc_tb(top.get());
-
+    npc_tb(top.get(), argc, argv);
+    // printf("Bye at main\n");
     exit_routine();
+    // printf("Bye at end\n");
     return 0;
 }

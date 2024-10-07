@@ -87,7 +87,7 @@ static long load_elf(FILE* fp){
   load_segments(fp, elf_phdrs, elf_shdrs, elf_nr_phdr);
   free(elf_phdrs);
   free(elf_shdrs);
-  free(elf_symtab);
+  // free(elf_symtab);
   return ret;
 }
 
