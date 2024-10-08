@@ -11,6 +11,7 @@
 !README.md
 !.gitignore
 !init.sh
+!sim-utils/*
 /fceux-am
 /nvboard
 /temp

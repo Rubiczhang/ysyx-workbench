@@ -87,7 +87,7 @@ static long load_elf(FILE* fp){
   load_segments(fp, elf_phdrs, elf_shdrs, elf_nr_phdr);
   free(elf_phdrs);
   free(elf_shdrs);
-  // free(elf_symtab);
+  free(elf_symtab);
   return ret;
 }
 
@@ -153,43 +153,43 @@ void init_monitor(int argc, char *argv[]) {
   /* Parse arguments. */
   parse_args(argc, argv);
 
-  /* Set random seed. */
-  init_rand();
+//   /* Set random seed. */
+//   init_rand();
 
-  /* Open the log file. */
-  init_log(log_dir);
+//   /* Open the log file. */
+//   init_log(log_dir);
 
-  /* Initialize memory. */
-  init_mem();
+//   /* Initialize memory. */
+//   init_mem();
 
-  /* Initialize devices. */
-  IFDEF(CONFIG_DEVICE, init_device());
+//   /* Initialize devices. */
+//   IFDEF(CONFIG_DEVICE, init_device());
 
-  /* Perform ISA dependent initialization. */
-  init_isa();
+//   /* Perform ISA dependent initialization. */
+//   init_isa();
 
-  /* Load the image to memory. This will overwrite the built-in image. */
-  long img_size = load_img();
+//   /* Load the image to memory. This will overwrite the built-in image. */
+//   long img_size = load_img();
 
-  /* Initialize differential testing. */
-  init_difftest(diff_so_file, img_size, difftest_port);
+//   /* Initialize differential testing. */
+//   init_difftest(diff_so_file, img_size, difftest_port);
 
-  /* Initialize the simple debugger. */
-  init_sdb();
+//   /* Initialize the simple debugger. */
+//   init_sdb();
 
-#ifndef CONFIG_ISA_loongarch32r
-  IFDEF(CONFIG_ITRACE, init_disasm(
-    MUXDEF(CONFIG_ISA_x86,     "i686",
-    MUXDEF(CONFIG_ISA_mips32,  "mipsel",
-    MUXDEF(CONFIG_ISA_riscv,
-      MUXDEF(CONFIG_RV64,      "riscv64",
-                               "riscv32"),
-                               "bad"))) "-pc-linux-gnu"
-  ));
-#endif
+// #ifndef CONFIG_ISA_loongarch32r
+//   IFDEF(CONFIG_ITRACE, init_disasm(
+//     MUXDEF(CONFIG_ISA_x86,     "i686",
+//     MUXDEF(CONFIG_ISA_mips32,  "mipsel",
+//     MUXDEF(CONFIG_ISA_riscv,
+//       MUXDEF(CONFIG_RV64,      "riscv64",
+//                                "riscv32"),
+//                                "bad"))) "-pc-linux-gnu"
+//   ));
+// #endif
 
-  /* Display welcome message. */
-  welcome();
+//   /* Display welcome message. */
+//   welcome();
 }
 #else // CONFIG_TARGET_AM
 static long load_img() {

@@ -26,7 +26,10 @@ DIRS-BLACKLIST-$(CONFIG_TARGET_AM) += src/monitor/sdb
 
 # temp modification, src/monitor and src/monitor/sdb would be deleted.
 DIRS-BLACKLIST-y += src/monitor src/monitor/sdb				
-INC_PATH += $(SIM_UTIL_DIR)/$(UTILS_INC_PATH)
+SRCS-BLACKLIST-y += src/utils/timer.c
+
+INC_PATH += $(abspath $(SIM_UTIL_DIR)/$(UTILS_INC_PATH))
+$(info ######### $(INC_PATH))
 
 SHARE = $(if $(CONFIG_TARGET_SHARE),1,0)
 LIBS += $(if $(CONFIG_TARGET_NATIVE_ELF),-lreadline -ldl -pie,)
