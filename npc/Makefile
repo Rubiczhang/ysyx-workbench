@@ -23,7 +23,7 @@ PROJECT_ROOT := $(abspath .)
 CSRCS := $(wildcard $(PROJECT_ROOT)/csrc/*.cpp)
 CSRCS += $(SRC_AUTO_BIND)
 VSRCS := $(wildcard $(PROJECT_ROOT)/vsrc/*)
-DIRS = 
+DIRS-y = 
 
 
 VERILOG_INCPATH = $(abspath ./vsrc)
@@ -33,17 +33,30 @@ VERILATOR_FLAGS = --cc --exe --build
 VERILATOR_TRACE_FLAGS = --trace-fst 
 TOP = top
 
+
 ############## sim_utils
-SIM_UTIL_DIR = ../sim-utils
-include $(SIM_UTIL_DIR)/filelist.mk
-DIRS += $(SIM_UTIL_DIR)/$(UTILS_SRCS_DIR)
+SIM_UTIL_PATH = ../sim-utils
+-include $(NPC_HOME)/include/config/auto.conf
+-include $(NPC_HOME)/include/config/auto.conf.cmd
 
-INC_PATH += $(abspath $(SIM_UTIL_DIR)/$(UTILS_INC_PATH))
-CSRCS += $(abspath $(shell find -L $(DIRS) -name "*.c"))
-
+remove_quote = $(patsubst "%",%,$(1))
+# Extract variabls from menuconfig
+GUEST_ISA ?= $(call remove_quote,$(CONFIG_ISA))
 
 # Include rules for menuconfig
-include $(SIM_UTIL_DIR)/scripts/config.mk
+include $(SIM_UTIL_PATH)/scripts/config.mk
+# Include all filelist.mk to merge file lists
+FILELIST_MK += $(shell find -L ../sim-utils -name "filelist.mk")
+include $(FILELIST_MK)
+
+
+# INC_PATH += $(abspath $(SIM_UTIL_PATH)/$(UTILS_INC_PATH))
+INC_PATH += $(abspath include)
+CSRCS += $(abspath $(shell find -L $(DIRS-y) -name "*.c"))
+###############
+
+$(info ###############$(INC_PATH))
+
 
 # rules for verilator
 INCFLAGS = $(addprefix -I, $(INC_PATH))

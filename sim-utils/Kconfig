@@ -8,7 +8,54 @@ config SIM_NPC
 	bool "npc"
 endchoice
 
-#This Kconfig is used in config.mk, which would be included in nemu(npc)/makefile
+# This Kconfig is used in config.mk, which would be included in nemu(npc)/makefile
+
+choice
+  prompt "Running mode"
+  default MODE_SYSTEM
+
+config MODE_SYSTEM
+  bool "System mode"
+  help
+    Support full-system functionality, including privileged instructions, MMU and devices.
+endchoice
+
+if MODE_SYSTEM
+	source "../sim-utils/scripts/memory/Kconfig"
+	source "../sim-utils/scripts/device/Kconfig"
+endif
+
+choice
+  prompt "Base ISA"
+  default ISA_riscv
+config ISA_x86
+  bool "x86"
+config ISA_mips32
+  bool "mips32"
+config ISA_riscv
+  bool "riscv"
+config ISA_loongarch32r
+  bool "loongarch32r"
+endchoice
+
+config ISA
+  string
+  default "x86" if ISA_x86
+  default "mips32" if ISA_mips32
+  default "riscv32" if ISA_riscv && !RV64
+  default "riscv64" if ISA_riscv &&  RV64
+  default "loongarch32r" if ISA_loongarch32r
+  default "none"
+
+config ISA64
+  depends on ISA_riscv && RV64
+  bool
+  default y
+
+
+if ISA_riscv
+source "../sim-utils/scripts/isa/riscv32/Kconfig"
+endif
 
 menu "NEMU CONFIGS"
  	depends on SIM_NEMU
