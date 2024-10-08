@@ -53,7 +53,7 @@ LDFLAGS += $(CFLAGS_BUILD)
 VALGRIND ?=
 
 # Include rules for menuconfig
-include $(NEMU_HOME)/scripts/config.mk
+include $(SIM_UTIL_DIR)/scripts/config.mk
 
 ifdef CONFIG_TARGET_AM
 include $(AM_HOME)/Makefile

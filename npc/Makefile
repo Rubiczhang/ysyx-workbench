@@ -23,6 +23,7 @@ PROJECT_ROOT := $(abspath .)
 CSRCS := $(wildcard $(PROJECT_ROOT)/csrc/*.cpp)
 CSRCS += $(SRC_AUTO_BIND)
 VSRCS := $(wildcard $(PROJECT_ROOT)/vsrc/*)
+DIRS = 
 
 
 VERILOG_INCPATH = $(abspath ./vsrc)
@@ -32,9 +33,22 @@ VERILATOR_FLAGS = --cc --exe --build
 VERILATOR_TRACE_FLAGS = --trace-fst 
 TOP = top
 
+############## sim_utils
+SIM_UTIL_DIR = ../sim-utils
+include $(SIM_UTIL_DIR)/filelist.mk
+DIRS += $(SIM_UTIL_DIR)/$(UTILS_SRCS_DIR)
+
+INC_PATH += $(abspath $(SIM_UTIL_DIR)/$(UTILS_INC_PATH))
+CSRCS += $(abspath $(shell find -L $(DIRS) -name "*.c"))
+
+
+# Include rules for menuconfig
+include $(SIM_UTIL_DIR)/scripts/config.mk
+
 # rules for verilator
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS)
+
 
 
 VERILATOR_BASEOPTION = $(VSRCS) $(CSRCS) $(SRC_AUTO_BIND) $(abspath $(NVBOARD_ARCHIVE)) \
@@ -48,19 +62,21 @@ VERILATOR_DEBUG = --debug --gdbbt
 IMG ?=
 ARGS ?=
 
+
 all:
 
 	@echo "Write this Makefile by your self."
 
 .PHONY: sim clean board run
 
+NPCEXEC= $(OBJ_DIR)/Vtop $(IMG) $(ARGS)
 
 sim: $(VSRCS) $(CSRCS) $(SRC_AUTO_BIND) $(NVBOARD_ARCHIVE) 
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	verilator $(VERILATOR_BASEOPTION) 
 
 run: sim
-	$(OBJ_DIR)/Vtop $(IMG) $(ARGS)
+	$(NPCEXEC)
 
 veri_debug: VERILATOR_BASEOPTION += $(VERILATOR_DEBUG)
 veri_debug: sim
@@ -69,7 +85,7 @@ veri_debug: sim
 trace: CXXFLAGS += -DTRACE_ENABLE
 trace: VERILATOR_FLAGS += $(VERILATOR_TRACE_FLAGS)
 trace: sim
-	$(OBJ_DIR)/V$(TOP) +trace
+	$(NPCEXEC) +trace
 
 board: $(SRC_AUTO_BIND)
 board: VERILATOR_BASEOPTION += $(SRC_AUTO_BIND)

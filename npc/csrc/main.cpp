@@ -73,6 +73,6 @@ int main(int argc, char** argv){
     npc_tb(top.get(), argc, argv);
     // printf("Bye at main\n");
     exit_routine();
-    // printf("Bye at end\n");
+    printf("Bye at end\n");
     return 0;
 }

@@ -1,0 +1,18 @@
+mainmenu "Simulator Configuration Menu"
+
+choice
+	prompt "Simulator"
+config SIM_NEMU
+	bool "NEMU"
+config SIM_NPC
+	bool "npc"
+endchoice
+
+#This Kconfig is used in config.mk, which would be included in nemu(npc)/makefile
+
+menu "NEMU CONFIGS"
+ 	depends on SIM_NEMU
+if SIM_NEMU
+	source "../sim-utils/scripts/nemu/Kconfig"
+endif
+endmenu
