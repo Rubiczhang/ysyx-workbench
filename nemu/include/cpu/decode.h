@@ -18,13 +18,15 @@
 
 #include <isa.h>
 
-typedef struct Decode {
-  vaddr_t pc;
-  vaddr_t snpc; // static next pc
-  vaddr_t dnpc; // dynamic next pc
-  ISADecodeInfo isa;
-  IFDEF(CONFIG_ITRACE, char logbuf[256]);
-} Decode;
+#include <cpu/sim_decode.h>
+
+// typedef struct Decode {
+//   vaddr_t pc;
+//   vaddr_t snpc; // static next pc
+//   vaddr_t dnpc; // dynamic next pc
+//   ISADecodeInfo isa;
+//   IFDEF(CONFIG_ITRACE, char logbuf[256]);
+// } Decode;
 
 // --- pattern matching mechanism ---
 __attribute__((always_inline))

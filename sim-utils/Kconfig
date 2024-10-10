@@ -8,6 +8,16 @@ config SIM_NPC
 	bool "npc"
 endchoice
 
+config SIM
+  string 
+  default "nemu" if SIM_NEMU
+  default "npc"  if SIM_NPC
+
+config UPPER_SIM
+  string 
+  default "NEMU" if SIM_NEMU
+  default "NPC" if SIM_NPC
+
 # This Kconfig is used in config.mk, which would be included in nemu(npc)/makefile
 
 choice

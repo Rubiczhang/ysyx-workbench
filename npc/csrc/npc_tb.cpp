@@ -1,6 +1,14 @@
-#include "npc_tb.hh"
+#include <npc_tb.hh>
+#include <iostream>
 
 void init_monitor(int, char *[]);
+
+extern "C" void handle_ebreak(){
+  std::cout << "EBREAK encountered!" <<std::endl;
+  exit_routine();
+  exit(0);
+}
+
 
 int npc_tb(Vtop* top, int argc, char* argv[]){
   init_monitor(argc, argv);

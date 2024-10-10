@@ -49,18 +49,18 @@ include $(SIM_UTIL_PATH)/scripts/config.mk
 FILELIST_MK += $(shell find -L ../sim-utils -name "filelist.mk")
 include $(FILELIST_MK)
 
-
 # INC_PATH += $(abspath $(SIM_UTIL_PATH)/$(UTILS_INC_PATH))
 INC_PATH += $(abspath include)
 CSRCS += $(abspath $(shell find -L $(DIRS-y) -name "*.c"))
 ###############
 
-$(info ###############$(INC_PATH))
 
 
 # rules for verilator
+# $(info ###############$(INC_PATH))
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS)
+CXXFLAGS += -D__GUEST_ISA__=$(GUEST_ISA)
 
 
 
@@ -102,6 +102,14 @@ trace: sim
 
 board: $(SRC_AUTO_BIND)
 board: VERILATOR_BASEOPTION += $(SRC_AUTO_BIND)
+
+reg_test:
+	echo "### clean nemu"
+	make -C $(NEMU_HOME) clean
+	echo "### Test am-add"
+	make -C ../am-kernels/tests/cpu-tests run_bach ALL=add ARCH=riscv32-nemu
+	echo "### Test npc"
+	make sim
 
 # wave:
 # 	gtkwave $(TRACE_DIR)/wave.fst

@@ -36,6 +36,8 @@ FILELIST_MK = $(shell find -L ./src -name "filelist.mk")
 FILELIST_MK += $(shell find -L ../sim-utils -name "filelist.mk")
 include $(FILELIST_MK)
 
+# $(info ##################$(INC_PATH))
+
 # Filter out directories and files in blacklist to obtain the final set of source files
 DIRS-BLACKLIST-y += $(DIRS-BLACKLIST)
 SRCS-BLACKLIST-y += $(SRCS-BLACKLIST) $(shell find -L $(DIRS-BLACKLIST-y) -name "*.c")

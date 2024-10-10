@@ -14,7 +14,6 @@
 ***************************************************************************************/
 
 #include <cpu/cpu.h>
-#include <cpu/decode.h>
 #include <cpu/difftest.h>
 #include <monitor/sdb/watchpoint.h>
 #include <locale.h>
@@ -95,7 +94,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
 #endif
 }
 
-static void execute(uint64_t n) {
+void sim_cpu_execute(uint64_t n) {
   Decode s;
   for (;n > 0; n --) {
     exec_once(&s, cpu.pc);
@@ -106,7 +105,7 @@ static void execute(uint64_t n) {
   }
 }
 
-static void statistic() {
+void log_statistic() {
   IFNDEF(CONFIG_TARGET_AM, setlocale(LC_NUMERIC, ""));
 #define NUMBERIC_FMT MUXDEF(CONFIG_TARGET_AM, "%", "%'") PRIu64
   Log("host time spent = " NUMBERIC_FMT " us", g_timer);
@@ -115,39 +114,39 @@ static void statistic() {
   else Log("Finish running in less than 1 us and can not calculate the simulation frequency");
 }
 
-void assert_fail_msg() {
-  isa_reg_display();
-  statistic();
-}
+// void assert_fail_msg() {
+//   isa_reg_display();
+//   statistic();
+// }
 
-/* Simulate how the CPU works. */
-void cpu_exec(uint64_t n) {
-  g_print_step = (n < MAX_INST_TO_PRINT);
-  switch (nemu_state.state) {
-    case NEMU_END: case NEMU_ABORT:
-      printf("Program execution has ended. To restart the program, exit NEMU and run again.\n");
-      return;
-    default: nemu_state.state = NEMU_RUNNING;
-  }
+// /* Simulate how the CPU works. */
+// void cpu_exec(uint64_t n) {
+//   g_print_step = (n < MAX_INST_TO_PRINT);
+//   switch (nemu_state.state) {
+//     case NEMU_END: case NEMU_ABORT:
+//       printf("Program execution has ended. To restart the program, exit NEMU and run again.\n");
+//       return;
+//     default: nemu_state.state = NEMU_RUNNING;
+//   }
 
-  uint64_t timer_start = get_time();
+//   uint64_t timer_start = get_time();
 
-  execute(n);
+//   execute(n);
 
-  uint64_t timer_end = get_time();
-  g_timer += timer_end - timer_start;
+//   uint64_t timer_end = get_time();
+//   g_timer += timer_end - timer_start;
 
-  IFDEF(CONFIG_IRINGBUF, flush_iring_buf());
-  switch (nemu_state.state) {
-    case NEMU_RUNNING: nemu_state.state = NEMU_STOP; break;
+//   IFDEF(CONFIG_IRINGBUF, flush_iring_buf());
+//   switch (nemu_state.state) {
+//     case NEMU_RUNNING: nemu_state.state = NEMU_STOP; break;
 
-    case NEMU_END: case NEMU_ABORT:
-      Log("nemu: %s at pc = " FMT_WORD,
-          (nemu_state.state == NEMU_ABORT ? ANSI_FMT("ABORT", ANSI_FG_RED) :
-           (nemu_state.halt_ret == 0 ? ANSI_FMT("HIT GOOD TRAP", ANSI_FG_GREEN) :
-            ANSI_FMT("HIT BAD TRAP", ANSI_FG_RED))),
-          nemu_state.halt_pc);
-      // fall through
-    case NEMU_QUIT: statistic();
-  }
-}
+//     case NEMU_END: case NEMU_ABORT:
+//       Log("nemu: %s at pc = " FMT_WORD,
+//           (nemu_state.state == NEMU_ABORT ? ANSI_FMT("ABORT", ANSI_FG_RED) :
+//            (nemu_state.halt_ret == 0 ? ANSI_FMT("HIT GOOD TRAP", ANSI_FG_GREEN) :
+//             ANSI_FMT("HIT BAD TRAP", ANSI_FG_RED))),
+//           nemu_state.halt_pc);
+//       // fall through
+//     case NEMU_QUIT: statistic();
+//   }
+// }

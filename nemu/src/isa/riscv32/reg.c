@@ -45,3 +45,7 @@ word_t isa_reg_str2val(const char *s, bool *success) {
   }
   return gpr(idx);    //no matter success or not 
 }
+
+word_t getpc(){
+  return cpu.pc;
+}

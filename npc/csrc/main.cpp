@@ -6,7 +6,7 @@
 #include <memory>
 #include <signal.h>
 #include <nvboard.h>
-#include "npc_tb.hh"
+#include <npc_tb.hh>
 
 
 #ifdef TRACE_ENABLE
