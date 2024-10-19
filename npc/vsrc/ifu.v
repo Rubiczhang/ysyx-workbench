@@ -3,6 +3,7 @@ module ifu (
   input clk, 
   input rst_n,
 
+
 // For icache/memory
   output[ADDR_WIDTH-1 : 0]    instr_addr_icache_o,
   input [DATA_WIDTH-1 : 0]    instr_icache_i,
@@ -24,8 +25,9 @@ module ifu (
   assign pc_idu_o     = pc;
   assign instr_addr_icache_o = pc;
 
-  always @(posedge clk or rst_n) begin
+  always @(posedge clk or !rst_n) begin
     if(!rst_n) begin pc <= 32'h80000000; end
+    // if(!rst_n) begin pc <= rst_pc_i; end
     else begin
       pc <= pc+4;
     end

@@ -19,10 +19,11 @@ SRC_AUTO_BIND = $(abspath $(BUILD_DIR)/auto_bind.cpp)
 $(SRC_AUTO_BIND): $(NXDC_FILES)
 	python3 $(NVBOARD_HOME)/scripts/auto_pin_bind.py $^ $@
 
-PROJECT_ROOT := $(abspath .)
-CSRCS := $(wildcard $(PROJECT_ROOT)/csrc/*.cpp)
+NPC_HOME?= $(abspath .)
+# CSRCS := $(wildcard $(PROJECT_ROOT)/csrc/*.cpp)
+CSRCS := $(shell find -L $(NPC_HOME) -name "*.cpp")
 CSRCS += $(SRC_AUTO_BIND)
-VSRCS := $(wildcard $(PROJECT_ROOT)/vsrc/*)
+VSRCS := $(shell find -L $(NPC_HOME) -name "*.v")
 DIRS-y = 
 
 
@@ -35,7 +36,7 @@ TOP = top
 
 
 ############## sim_utils
-SIM_UTIL_PATH = ../sim-utils
+SIM_UTIL_PATH = $(abspath ../sim-utils)
 -include $(NPC_HOME)/include/config/auto.conf
 -include $(NPC_HOME)/include/config/auto.conf.cmd
 
@@ -49,22 +50,37 @@ include $(SIM_UTIL_PATH)/scripts/config.mk
 FILELIST_MK += $(shell find -L ../sim-utils -name "filelist.mk")
 include $(FILELIST_MK)
 
+
+
 # INC_PATH += $(abspath $(SIM_UTIL_PATH)/$(UTILS_INC_PATH))
 INC_PATH += $(abspath include)
 CSRCS += $(abspath $(shell find -L $(DIRS-y) -name "*.c"))
+CSRCS += $(CXXSRC)
+# CXXSRCS += $(CXXSRC)
 ###############
 
-
+$(info -----------$(CXXFLAGS))
 
 # rules for verilator
 # $(info ###############$(INC_PATH))
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS)
 CXXFLAGS += -D__GUEST_ISA__=$(GUEST_ISA)
+LDFLAGS += -lreadline
+LDFLAGS += $(LIBS)
 
 
+# Some convenient rules
 
-VERILATOR_BASEOPTION = $(VSRCS) $(CSRCS) $(SRC_AUTO_BIND) $(abspath $(NVBOARD_ARCHIVE)) \
+override ARGS += --log=$(BUILD_DIR)/npc-log
+override ARGS += $(ARGS_DIFF)
+# $(info, ###############$(ARGS))
+
+# Command to execute NEMU
+IMG ?=
+
+
+VERILATOR_BASEOPTION = $(VSRCS) $(CSRCS) $(CXXSRCS) $(SRC_AUTO_BIND) $(abspath $(NVBOARD_ARCHIVE)) \
 					$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
 					$(addprefix -CFLAGS , $(INC_FLAGS)) \
 					$(VERILOG_INCFLAGS) 		\
@@ -72,23 +88,21 @@ VERILATOR_BASEOPTION = $(VSRCS) $(CSRCS) $(SRC_AUTO_BIND) $(abspath $(NVBOARD_AR
 					--top $(TOP)  \
 					$(VERILATOR_FLAGS)
 VERILATOR_DEBUG = --debug --gdbbt
-IMG ?=
-ARGS ?=
 
 
 all:
 
 	@echo "Write this Makefile by your self."
 
-.PHONY: sim clean board run
+.PHONY: clean board run sim
 
-NPCEXEC= $(OBJ_DIR)/Vtop $(IMG) $(ARGS)
+NPCEXEC= $(OBJ_DIR)/Vtop $(ARGS) $(IMG) 
 
-sim: $(VSRCS) $(CSRCS) $(SRC_AUTO_BIND) $(NVBOARD_ARCHIVE) 
+sim: $(VSRCS) $(CSRCS) $(CXXSRCS) $(SRC_AUTO_BIND) $(NVBOARD_ARCHIVE)  
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	verilator $(VERILATOR_BASEOPTION) 
 
-run: sim
+run: 
 	$(NPCEXEC)
 
 veri_debug: VERILATOR_BASEOPTION += $(VERILATOR_DEBUG)
@@ -98,22 +112,24 @@ veri_debug: sim
 trace: CXXFLAGS += -DTRACE_ENABLE
 trace: VERILATOR_FLAGS += $(VERILATOR_TRACE_FLAGS)
 trace: sim
-	$(NPCEXEC) +trace
+	$(NPCEXEC)
 
 board: $(SRC_AUTO_BIND)
 board: VERILATOR_BASEOPTION += $(SRC_AUTO_BIND)
 
 reg_test:
+	@set -e
 	echo "### clean nemu"
 	make -C $(NEMU_HOME) clean
 	echo "### Test am-add"
-	make -C ../am-kernels/tests/cpu-tests run_bach ALL=add ARCH=riscv32-nemu
+	make -C ../am-kernels/tests/cpu-tests run_bach ALL=add ARCH=riscv32-nemu  || (echo "Nemu build failed"; exit 1;)
 	echo "### Test npc"
+	make clean
 	make sim
 
-# wave:
-# 	gtkwave $(TRACE_DIR)/wave.fst
+wave:
+	gtkwave $(TRACE_DIR)/wave.fst
 clean:
-	rm -rf build obj_dir $(OBJ_DIR)
+	rm -rf build obj_dir $(OBJ_DIR) logs
 
 include ../Makefile

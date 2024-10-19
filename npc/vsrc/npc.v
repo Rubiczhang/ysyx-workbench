@@ -42,6 +42,9 @@ idu u_idu(
     
   //to execute unit
   .dyn_instr_exu_o(idu_exeu_dyn_instr)
+`ifdef VERILATOR
+
+`endif
 );
 
 exeu u_exeu(
@@ -55,6 +58,9 @@ exeu u_exeu(
   .wrtbck_val_idu_o(exeu_idu_wrtbck_val),
   .rd_idu_o(exeu_idu_rd),
   .wrtbck_en_idu_o(exeu_idu_wrtbck_en)
+`ifdef VERILATOR
+
+`endif
 );
 
 endmodule

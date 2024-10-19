@@ -17,6 +17,7 @@
 #include <cpu/cpu.h>
 #include <cpu/ifetch.h>
 #include <cpu/decode.h>
+#include <micro_arch.h>
 
 #define R(i) gpr(i)
 #define Mr vaddr_read
@@ -41,6 +42,13 @@ enum {
 #define immB() do { *imm = (SEXT(BITS(i, 31, 31), 1) << 12) | (BITS(i, 7, 7) << 11) \
                               | (BITS(i, 30, 25) << 5) | (BITS(i, 11, 8) << 1); } while(0)
 #define immISI() do { *imm = BITS(i, 24, 20); } while(0)
+
+#define getCmtSrc1()  (src1)
+#define getCmtSrc2()  (src2)
+#define getCmtImm()   (imm )
+#define getCmtIsStore()   (load_flag )
+#define getCmtIsLoad()    (store_flag)
+#define getCmtStoreLen()  (store_len )
 
 static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_t *imm, int type) {
   uint32_t i = s->isa.inst.val;
@@ -70,7 +78,6 @@ void print_inst(vaddr_t thispc) {
       "\t%08x %08x...\n",
       thispc, p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7], temp[0], temp[1]);
 }
-
 
 
 
@@ -180,33 +187,37 @@ static int decode_exec(Decode *s) {
   INSTPAT_END();
 
 #ifdef CONFIG_ITRACE_COND
-  char *p = s->logbuf;
-  char *buff = s->logbuf;
-  p += snprintf(p, sizeof(s->logbuf), "-----begin-------------\n");
-  uint32_t i = s->isa.inst.val;
-  int rs2 = BITS(i, 24, 20);
-  p += snprintf(p, sizeof(s->logbuf)-(p-buff), "rs1: $%s: %08x, rs2: $%s: %08x, imm: %d\n", 
-                reg_name(rs1), src1, reg_name(rs2), src2, imm);
-  p += snprintf(p, sizeof(s->logbuf) - (p-buff), "s->dnpc: %08x\n",  s->dnpc);
-  if(load_flag){
-    p += snprintf(p, sizeof(s->logbuf) - (p-buff), "R(%s)<-Mem(0x%08x): 0x%08x\n", reg_name(rd), src1+imm, R(rd));
-  } else if(store_flag){
-    word_t mask = 0;
-    switch(store_len){
-      case 1:
-        mask = (1 << 8) - 1;break;
-      case 2:
-        mask = (1 << 16) - 1; break;
-      default:
-        mask = -1;  break;
-    }
-    int rs2 = BITS(i, 24, 20);
-    p += snprintf(p, sizeof(s->logbuf) - (p-buff), "Mem(0x%08x) <- R(%s): 0x%08x\n", src1+imm, reg_name(rs2), mask & src2);
-  } else{
-    p += snprintf(p, sizeof(s->logbuf) - (p-buff), "R(%s) <- 0x%08x\n",reg_name(rd), R(rd));
-  }
-  // log_write("%s", s->logbuf);
+  inst_dtl_trace();
 #endif
+
+// #ifdef CONFIG_ITRACE_COND
+//   char *p = s->logbuf;
+//   char *buff = s->logbuf;
+//   p += snprintf(p, sizeof(s->logbuf), "-----begin-------------\n");
+//   uint32_t i = s->isa.inst.val;
+//   int rs2 = BITS(i, 24, 20);
+//   p += snprintf(p, sizeof(s->logbuf)-(p-buff), "rs1: $%s: %08x, rs2: $%s: %08x, imm: %d\n", 
+//                 reg_name(rs1), src1, reg_name(rs2), src2, imm);
+//   p += snprintf(p, sizeof(s->logbuf) - (p-buff), "s->dnpc: %08x\n",  s->dnpc);
+//   if(load_flag){
+//     p += snprintf(p, sizeof(s->logbuf) - (p-buff), "R(%s)<-Mem(0x%08x): 0x%08x\n", reg_name(rd), src1+imm, R(rd));
+//   } else if(store_flag){
+//     word_t mask = 0;
+//     switch(store_len){
+//       case 1:
+//         mask = (1 << 8) - 1;break;
+//       case 2:
+//         mask = (1 << 16) - 1; break;
+//       default:
+//         mask = -1;  break;
+//     }
+//     int rs2 = BITS(i, 24, 20);
+//     p += snprintf(p, sizeof(s->logbuf) - (p-buff), "Mem(0x%08x) <- R(%s): 0x%08x\n", src1+imm, reg_name(rs2), mask & src2);
+//   } else{
+//     p += snprintf(p, sizeof(s->logbuf) - (p-buff), "R(%s) <- 0x%08x\n",reg_name(rd), R(rd));
+//   }
+//   // log_write("%s", s->logbuf);
+// #endif
 
   R(0) = 0; // reset $zero to 0
 
@@ -217,3 +228,19 @@ int isa_exec_once(Decode *s) {
   s->isa.inst.val = inst_fetch(&s->snpc, 4);
   return decode_exec(s);
 }
+
+
+// inline word_t getCmtSrc1(Decode *s){
+//   uint32_t i = s->isa.inst.val;
+//   int rs1 = BITS(i, 19, 15);
+//   return R(rs1);
+// }
+
+
+// inline word_t getCmtSrc2(Decode *s){
+//   uint32_t i = s->isa.inst.val;
+//   int rs2 = BITS(i, 24, 20);
+//   return R(rs2);
+// }
+
+// inline word_t getCmtImm

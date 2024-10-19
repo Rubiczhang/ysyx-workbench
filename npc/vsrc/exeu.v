@@ -12,16 +12,26 @@ module exeu(
   output                                   wrtbck_en_idu_o
 );
 
+`include "include/exeu_dpi.vh"
+
+// export  "DPI-C" task readExeuPc;
+// task readExeuPc;
+//   output int ret_exeu_pc;
+//   assign ret_exeu_pc = exeu_pc;
+// endtask
+
 reg       [DATA_WIDTH-1:        0] alu_ans;
 wire      [RD_LEN_STA-1:        0] rd;
 wire      [ALUOP_LEN_DYN-1:     0] alu_op;
 wire      [DATA_WIDTH-1:        0] imm;
+wire      [PC_WIDTH-1:        0]   exeu_pc;
 wire      [DATA_WIDTH-1:        0] rs1_val;
 wire      [DATA_WIDTH-1:        0] rs2_val;
 wire                               use_rd;
 wire                               use_rs1;
 wire                               use_rs2;
 wire                               use_imm;
+wire     [INST_TYPE_WIDTH-1:    0] instr_type;
 
 
 wire      [DATA_WIDTH-1:        0]  alu_oprnd1;
@@ -31,11 +41,14 @@ assign  alu_op  =   dyn_instr_idu_i[ALUOP_HI_DYNOFF:  ALUOP_LO_DYNOFF];
 assign  rs1_val =   dyn_instr_idu_i[RS1VAL_HI_DYNOFF: RS1VAL_LO_DYNOFF];
 assign  rs2_val =   dyn_instr_idu_i[RS2VAL_HI_DYNOFF: RS2VAL_LO_DYNOFF];
 assign  imm     =   dyn_instr_idu_i[IMM_HI_DYNOFF   : IMM_LO_DYNOFF];
+assign  exeu_pc     =   dyn_instr_idu_i[PC_HI_DYNOFF   : PC_LO_DYNOFF];
 assign  rd      =   dyn_instr_idu_i[RD_HI_DYNOFF    : RD_LO_DYNOFF];
+assign  instr_type = dyn_instr_idu_i[INSTYPE_HI_DYNOFF: INSTYPE_LO_DYNOFF];
 assign  use_rd  =   dyn_instr_idu_i[USE_RD_DYNOFF];
 assign  use_rs1  =   dyn_instr_idu_i[USE_RS1_DYNOFF];
 assign  use_rs2  =   dyn_instr_idu_i[USE_RS2_DYNOFF];
 assign  use_imm  =   dyn_instr_idu_i[USE_IMM_DYNOFF];
+
 
 assign  rd_idu_o = rd;
 

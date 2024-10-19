@@ -13,13 +13,18 @@
 #include "verilated_fst_c.h"
 #endif  //TRACE_ENABLE
 
+std::unique_ptr<Vtop> top;
+// const std::unique_ptr<Vtop> top{new Vtop{contextp.get(), "TOP"}};
+
 void exit_routine(){
+    std::cout << "exting..." <<std::endl;
     #ifdef TRACE_ENABLE
         if(tfp){
             tfp->flush();
             tfp->close();
         }
     #endif
+    top.reset();
 }
 
 #ifdef TRACE_ENABLE
@@ -45,7 +50,6 @@ void assert_with_wave(bool x){
 void nvboard_bind_all_pins(Vtop* top);
 
 
-
 int main(int argc, char** argv){
     std::unique_ptr<VerilatedContext> contextp{new VerilatedContext};
 
@@ -54,21 +58,23 @@ int main(int argc, char** argv){
 #ifdef TRACE_ENABLE
     contextp->traceEverOn(true);
     signal(SIGINT, exit_handler);
+    signal(SIGABRT, exit_handler);
 #endif
-    const std::unique_ptr<Vtop> top{new Vtop{contextp.get(), "TOP"}};
+    top = std::make_unique<Vtop>(contextp.get(), "TOP");
+    // const std::unique_ptr<Vtop> top{new Vtop{contextp.get(), "TOP"}};
 
     // nvboard_bind_all_pins(top.get());
     // nvboard_init();
 #ifdef TRACE_ENABLE
     top->contextp()->traceEverOn(true);
-    const char* flag = Verilated::commandArgsPlusMatch("trace");
-    if(flag && 0 == std::strcmp(flag, "+trace")){
-        std::cout << "Enabling waves into logs/vlt_dump.fst .... \n";
-        tfp = new VerilatedFstC;
-        top->trace(tfp, 99);
-        Verilated::mkdir("logs");
-        tfp->open("logs/vlt_dump.fst");
-    }
+    // const char* flag = Verilated::commandArgsPlusMatch("trace");
+    // if(flag && 0 == std::strcmp(flag, "+trace")){
+    std::cout << "Enabling waves into logs/vlt_dump.fst .... \n";
+    tfp = new VerilatedFstC;
+    top->trace(tfp, 99);
+    Verilated::mkdir("logs");
+    tfp->open("logs/vlt_dump.fst");
+    // }
 #endif
     npc_tb(top.get(), argc, argv);
     // printf("Bye at main\n");

@@ -17,6 +17,13 @@ module idu(
 
 import "DPI-C" function void handle_ebreak();
 
+// export "DPI-C" task     readGpr;
+
+// task readGpr;
+//   input int idx;
+//   output int reg_val;
+//   assign reg_val = u_regFile
+// endtask
 
 wire    [OPCD_LEN_STA-1   : 0]     opcode;
 wire    [FUNC3_LEN_STA-1  : 0]     func3;
@@ -48,7 +55,7 @@ wire    [DATA_WIDTH  -1   : 0]     imm_s;           // 添加 imm_s 的定义
 reg     [INST_TYPE_WIDTH-1: 0]     instr_type;     
 wire                               is_i_type;
 reg    [ALUOP_LEN_DYN-1:   0]     alu_op;
-reg    [FUID_LEN_DYN -1:   0] fu_id;
+reg    [FUID_LEN_DYN -1:   0]     fu_id;
 
 
 
@@ -80,7 +87,9 @@ assign dyn_instr_exu_o[RD_HI_DYNOFF: RD_LO_DYNOFF] =   rd;
 assign dyn_instr_exu_o[RS1VAL_HI_DYNOFF     :   RS1VAL_LO_DYNOFF]  = rs1_val;
 assign dyn_instr_exu_o[RS2VAL_HI_DYNOFF     :   RS2VAL_LO_DYNOFF]  = rs2_val;
 assign dyn_instr_exu_o[IMM_HI_DYNOFF        :   IMM_LO_DYNOFF   ]  = imm;
+assign dyn_instr_exu_o[PC_HI_DYNOFF        :    PC_LO_DYNOFF   ]  =  pc_ifu_i;
 assign dyn_instr_exu_o[FUID_HI_DYNOFF       :   FUID_LO_DYNOFF ]  = fu_id;
+assign dyn_instr_exu_o[INSTYPE_HI_DYNOFF: INSTYPE_LO_DYNOFF]      = instr_type;
 assign dyn_instr_exu_o[USE_RS1_DYNOFF]  =             use_rs1;
 assign dyn_instr_exu_o[USE_RS2_DYNOFF]  =             use_rs2;
 assign dyn_instr_exu_o[USE_IMM_DYNOFF]  =             use_imm;

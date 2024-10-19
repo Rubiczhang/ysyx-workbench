@@ -14,6 +14,17 @@ module registerFile #(
   output    [DATA_WIDTH-1: 0]       rs2_val_o
 );
 
+
+export "DPI-C" task     readGpr;
+
+task readGpr;
+  input int idx;
+  output int reg_val;
+  assert(idx >= 0 && idx < 32);
+  assign reg_val = regfile[idx];
+endtask
+
+
   reg       [DATA_WIDTH-1: 0]       regfile   [0: 2** ADDR_WIDTH-1];
 
   assign rs1_val_o = regfile[rs1_i];

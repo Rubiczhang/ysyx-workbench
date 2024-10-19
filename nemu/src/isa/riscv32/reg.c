@@ -17,35 +17,42 @@
 #include "local-include/reg.h"
 #define NUM_REGS 32
 
-const char *regs[] = {
-  "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
-  "s0", "s1", "a0", "a1", "a2", "a3", "a4", "a5",
-  "a6", "a7", "s2", "s3", "s4", "s5", "s6", "s7",
-  "s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6"
-};
+// const char *regs[] = {
+//   "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
+//   "s0", "s1", "a0", "a1", "a2", "a3", "a4", "a5",
+//   "a6", "a7", "s2", "s3", "s4", "s5", "s6", "s7",
+//   "s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6"
+// };
 
-void isa_reg_display() {
-  for(int i = 0; i < NUM_REGS; i++){
-    bool succ = false;
+// void isa_reg_display() {
+//   for(int i = 0; i < NUM_REGS; i++){
+//     bool succ = false;
     
-    word_t val = isa_reg_str2val(regs[i], &succ);
-    Assert(succ, "Wrong Register Name: %s", regs[i]);
-    printf("%-10s  0x%08x        %-10u \n", regs[i], val, val);
-  }
+//     word_t val = isa_reg_str2val(regs[i], &succ);
+//     Assert(succ, "Wrong Register Name: %s", regs[i]);
+//     printf("%-10s  0x%08x        %-10u \n", regs[i], val, val);
+//   }
   
+// }
+
+// word_t isa_reg_str2val(const char *s, bool *success) {
+//   int idx = 0;
+//   for(; idx < 32; idx++){
+//     if(!strcmp(s, regs[idx])){ //same
+//       *success = true;
+//       break;
+//     }
+//   }
+//   return gpr(idx);    //no matter success or not 
+// }
+word_t getExepc(){
+  return getpc();
 }
 
-word_t isa_reg_str2val(const char *s, bool *success) {
-  int idx = 0;
-  for(; idx < 32; idx++){
-    if(!strcmp(s, regs[idx])){ //same
-      *success = true;
-      break;
-    }
-  }
-  return gpr(idx);    //no matter success or not 
-}
-
-word_t getpc(){
+inline word_t getpc(){
   return cpu.pc;
+}
+
+inline word_t getgpr(int idx){
+  return gpr(idx);
 }
