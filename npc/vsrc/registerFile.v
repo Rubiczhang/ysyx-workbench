@@ -31,7 +31,7 @@ endtask
   assign rs2_val_o = regfile[rs2_i];
 
   integer i;
-  always @(posedge clk or rst_n) begin
+  always @(posedge clk) begin
     if(!rst_n) begin
       for(i = 0; i < 2**ADDR_WIDTH; i = i+1) begin :reset_regfile;
         regfile[i] <= 0;

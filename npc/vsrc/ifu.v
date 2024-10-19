@@ -25,7 +25,7 @@ module ifu (
   assign pc_idu_o     = pc;
   assign instr_addr_icache_o = pc;
 
-  always @(posedge clk or !rst_n) begin
+  always @( posedge clk ) begin
     if(!rst_n) begin pc <= 32'h80000000; end
     // if(!rst_n) begin pc <= rst_pc_i; end
     else begin

@@ -31,17 +31,18 @@ wire    [FUNC7_LEN_STA-1  : 0]     func7;
 wire                               is_func7_0x20;
 wire                               is_func7_allzr;
 
-wire    [RS1_LEN_STA -1   : 0]     rs1;
-wire    [REG_DATA_WIDTH-1 : 0]     rs1_val;
-reg                               use_rs1;
-wire    [RS2_LEN_STA -1   : 0]     rs2;
-wire    [REG_DATA_WIDTH-1 : 0]     rs2_val;
-wire    [RD_LEN_STA - 1   : 0]     rd;
-reg                               use_rd;
-reg                               use_rs2;
-reg   [DATA_WIDTH  -1   : 0]      imm;   
-reg                               use_imm;
-wire                               invld_instr;
+wire    [RS1_LEN_STA -1   : 0]      rs1;
+wire    [REG_DATA_WIDTH-1 : 0]      rs1_val;
+reg                                 use_rs1;
+reg                                 use_pc;   
+wire    [RS2_LEN_STA -1   : 0]      rs2;
+wire    [REG_DATA_WIDTH-1 : 0]      rs2_val;
+wire    [RD_LEN_STA - 1   : 0]      rd;
+reg                                 use_rd;
+reg                                 use_rs2;
+reg   [DATA_WIDTH  -1   : 0]        imm;   
+reg                                 use_imm;
+wire                                invld_instr;
 
 wire    [DATA_WIDTH  -1   : 0]     imm_i_compu;     //imm computation i_type
 wire    [DATA_WIDTH  -1   : 0]     imm_i_compu;     //imm computation i_type
@@ -79,7 +80,8 @@ assign imm_s          = {{20{instr_ifu_i[31]}}, instr_ifu_i[31:25], instr_ifu_i[
 assign is_func7_0x20 = (func7 == FUNC7_0x20);
 assign is_func7_allzr = (func7 == FUNC7_ALLZR);
 
-assign is_i_type = (instr_type == I_COMPU_INSTR || instr_type == I_SHIFT_INSTR);
+assign is_i_type = (instr_type == I_COMPU_INSTR || instr_type == I_SHIFT_INSTR
+                    || instr_type == I_ECALL_INSTR || instr_type == I_EBREAK_INSTR);
 
 assign dyn_instr_exu_o[RS1_HI_DYNOFF: RS1_LO_DYNOFF] = rs1;
 assign dyn_instr_exu_o[RS2_HI_DYNOFF: RS2_LO_DYNOFF] = rs2;
@@ -98,6 +100,8 @@ assign dyn_instr_exu_o[ALUOP_HI_DYNOFF      :   ALUOP_LO_DYNOFF]  = alu_op;
 assign dyn_instr_exu_o[USE_RD_DYNOFF]  =    use_rd;
 //typedecoder
 always @(*) begin
+
+  instr_type = INVLD_INSTR;
   case (opcode)
     R_COMPU_OPCODE: begin
       if( (is_func7_0x20 && (func3 == SRA_FUNC3 || func3 == SUB_FUNC3))
@@ -123,6 +127,15 @@ always @(*) begin
       end
     end
 
+    U_LUI_OPCODE: begin
+      instr_type = U_LUI_INSTR;
+    end
+
+
+    U_AUIPC_OPCODE: begin
+      instr_type = U_AUIPC_INSTR;
+    end
+
     default:
       instr_type = INVLD_INSTR;
   endcase
@@ -132,11 +145,13 @@ end
 
 //ALU operation:
 always @(*) begin
-  alu_op = {ALUOP_LEN_DYN{1'b0}};
+
   if(instr_type == I_SHIFT_INSTR || instr_type == R_COMPU_INSTR) 
     alu_op = {{instr_ifu_i[30]}, instr_ifu_i[FUNC3_HI_STAOFF: FUNC3_LO_STAOFF]};
   else if(instr_type == I_COMPU_INSTR)
     alu_op = {1'b0, instr_ifu_i[FUNC3_HI_STAOFF: FUNC3_LO_STAOFF]};
+  else 
+    alu_op = {ALUOP_LEN_DYN{1'b0}};
 end
 
 
@@ -146,6 +161,8 @@ always @(*) begin
   case (instr_type)
     I_COMPU_INSTR:      imm = imm_i_compu;
     I_SHIFT_INSTR:      imm = imm_i_shamt;
+    U_AUIPC_INSTR:      imm = imm_u;
+    U_LUI_INSTR:        imm = imm_u;
     default:            imm = 32'b0;
   endcase
 end
@@ -154,17 +171,29 @@ end
 always @(*) begin
   use_rd = 1;
   fu_id = FU_ALU;
+  use_pc = 0;
 
   case (instr_type)
     I_COMPU_INSTR, I_SHIFT_INSTR: begin
       {use_rs1, use_rs2, use_imm} = 3'b101;
     end
 
-    INVLD_INSTR: begin
-      {use_rs1, use_rs2, use_imm} = 3'b000;
-      use_rd = 0;
+    U_LUI_INSTR: begin
+      {use_rs1, use_rs2, use_imm} = 3'b001;
     end
-    default:  {use_rs1, use_rs2, use_imm} = 3'b000;
+
+    U_AUIPC_INSTR: begin
+      {use_rs1, use_rs2, use_imm} = 3'b001;
+      use_pc = 1;
+    end
+
+    // INVLD_INSTR: begin
+    //   {use_rs1, use_rs2, use_imm} = 3'b000;
+    //   use_rd = 0;
+    // end
+    default: begin
+      {use_rs1, use_rs2, use_imm} = 3'b000;
+    end
   endcase
 end
 

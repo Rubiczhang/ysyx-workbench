@@ -12,10 +12,6 @@ extern "C"{
   svSetScope(scope);\
 }
 
-word_t getpc(){
-  // top.get()->u_npc->u_ifu->
-  return 0;
-}
 
 word_t getExepc(){
   // word_t pc = top.get()->u_npc->u_exeu->exeu_pc;
@@ -29,8 +25,12 @@ word_t getExepc(){
 }
 
 word_t getCmtpc(){
-  printf("Warning: getCmtpc is temperary using getExepc\n");
+  // printf("Warning: getCmtpc is temperary using getExepc\n");
   return getExepc();
+}
+
+word_t getpc(){
+  return getCmtpc();
 }
 
 word_t getgpr(int idx){

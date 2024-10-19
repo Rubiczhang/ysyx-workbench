@@ -15,10 +15,17 @@ extern void cpu_tick(Vtop *top, int n);
 extern "C" void gen_trace(Decode *s);
 
 void exec_once(Decode *s){
-  if(top->clk == 0){
-    cpu_tick_half(top.get());
-  }
-  cpu_tick(top.get(), 1);     //1->0->1
+  // printf("init pc: 0x%x\n", getpc());
+  assert(top->clk == 1);
+  // if(top->clk == 0){
+  //   cpu_tick_half(top.get());
+  // }
+  // printf("rstn: %d\n", top->rst_n);
+  // printf("clk1: %d\n", top->clk);
+  // cpu_tick(top.get(), 1);     //1->0->1
+  cpu_tick_half(top.get());      //1->0, eval but not update regs
+
+  // printf("clk2: %d\n", top->clk);
   // temporary choice for wbpc();
 
   s->pc           = getCmtpc();
@@ -31,6 +38,7 @@ void exec_once(Decode *s){
   gen_trace(s);
   // printf("Point 1\n");
 #endif
+  cpu_tick_half(top.get());     //0->1 
 }
 
 extern "C"{

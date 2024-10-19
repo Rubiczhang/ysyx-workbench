@@ -8,7 +8,7 @@
 extern std::unique_ptr<Vtop> top;
 
 void cpu_tick_half(Vtop* top){
-  top->clk = ~top->clk;
+  top->clk = !(top->clk);
   top->eval();
 #ifdef TRACE_ENABLE
   top->contextp()->timeInc(1);
@@ -40,6 +40,9 @@ static void reset(Vtop* top){
   // top->u_npc->u_ifu->instr_addr_icache_o =  0x80000000;
   // top->rootp->top__DOT__u_npc__DOT__u_ifu__DOT__pc = 0x80000000;
   cpu_tick(top, 5);
+  if(top->clk == 0){
+    cpu_tick_half(top);   //clk: 0->1
+  }
   top->rst_n = 1;
 }
 
