@@ -82,6 +82,12 @@ word_t getCmtStoreLen(){
   return ret_val;
 }
 
+word_t getCmtImm(){
+  getsetScope("TOP.top.u_npc.u_exeu");
+  int ret_val = 0;
+  top.get()->readExeuImm(&ret_val);
+  return ret_val;
+}
 
 }
 

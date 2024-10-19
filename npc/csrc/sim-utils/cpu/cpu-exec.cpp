@@ -4,6 +4,8 @@
 #include <locale.h>
 #include <micro_arch.h>
 #include <memory/paddr.h>
+#include <isa/riscv32/reg.h>
+
 // }
 
 #include <sim_npc.h>
@@ -25,6 +27,7 @@ void exec_once(Decode *s){
 
 #ifdef CONFIG_ITRACE
   // printf("Point 0\n");
+  inst_dtl_trace();
   gen_trace(s);
   // printf("Point 1\n");
 #endif
