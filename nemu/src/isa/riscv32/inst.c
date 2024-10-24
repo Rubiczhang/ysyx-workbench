@@ -49,6 +49,7 @@ enum {
 #define getCmtIsStore()   (load_flag )
 #define getCmtIsLoad()    (store_flag)
 #define getCmtStoreLen()  (store_len )
+#define getCmtRdNxtVal() (R(rd))
 
 static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_t *imm, int type) {
   uint32_t i = s->isa.inst.val;

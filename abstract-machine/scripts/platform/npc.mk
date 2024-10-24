@@ -27,6 +27,9 @@ run: image
 run_elf: NPCFLAGS += -w elf
 run_elf: image
 	$(MAKE) -C $(NPC_HOME) run ARGS="$(NPCFLAGS)" IMG=$(IMAGE).elf
+
+run_diff:
+	$(MAKE) -C $(NPC_HOME) run_diff ARGS="$(NPCFLAGS)" IMG=$(IMAGE).bin
   
 
 # trace: NPCFLAGS += +trace

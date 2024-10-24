@@ -31,6 +31,7 @@ VERILOG_INCPATH = $(abspath ./vsrc)
 VERILOG_INCFLAGS = $(addprefix -I, $(VERILOG_INCPATH))
 
 VERILATOR_FLAGS = --cc --exe --build 
+# VERILATOR_FLAGS = --cc --exe 
 VERILATOR_TRACE_FLAGS = --trace-fst 
 TOP = top
 
@@ -55,11 +56,12 @@ include $(FILELIST_MK)
 # INC_PATH += $(abspath $(SIM_UTIL_PATH)/$(UTILS_INC_PATH))
 INC_PATH += $(abspath include)
 CSRCS += $(abspath $(shell find -L $(DIRS-y) -name "*.c"))
+# duplacate dut.c for symbol linker.
+CSRCS += $(abspath $(shell find -L $(DIRS-y) -name "dut.c"))
 CSRCS += $(CXXSRC)
 # CXXSRCS += $(CXXSRC)
 ###############
 
-$(info -----------$(CXXFLAGS))
 
 # rules for verilator
 # $(info ###############$(INC_PATH))
@@ -68,6 +70,7 @@ CXXFLAGS += $(INCFLAGS)
 CXXFLAGS += -D__GUEST_ISA__=$(GUEST_ISA)
 LDFLAGS += -lreadline
 LDFLAGS += $(LIBS)
+# LDFLAGS += -Wl,--start-group dut.o monitor.o -Wl,--end-group
 
 
 # Some convenient rules
@@ -94,7 +97,7 @@ all:
 
 	@echo "Write this Makefile by your self."
 
-.PHONY: clean board run sim
+.PHONY: clean board run sim run_diff
 
 NPCEXEC= $(OBJ_DIR)/Vtop $(ARGS) $(IMG) 
 
@@ -105,13 +108,19 @@ sim: $(VSRCS) $(CSRCS) $(CXXSRCS) $(SRC_AUTO_BIND) $(NVBOARD_ARCHIVE)
 run: 
 	$(NPCEXEC)
 
+run_diff: ARGS+=-d $(NEMU_HOME)/build/riscv32-nemu-interpreter-so
+run_diff: run
+
 veri_debug: VERILATOR_BASEOPTION += $(VERILATOR_DEBUG)
 veri_debug: sim
 
 
-trace: CXXFLAGS += -DTRACE_ENABLE
-trace: VERILATOR_FLAGS += $(VERILATOR_TRACE_FLAGS)
-trace: sim
+
+trace_sim: CXXFLAGS += -DTRACE_ENABLE
+trace_sim: VERILATOR_FLAGS += $(VERILATOR_TRACE_FLAGS)
+trace_sim: sim
+
+trace: trace_sim
 	$(NPCEXEC)
 
 board: $(SRC_AUTO_BIND)
@@ -128,7 +137,7 @@ reg_test:
 	make sim
 
 wave:
-	gtkwave $(TRACE_DIR)/wave.fst
+	gtkwave logs/vlt_dump.fst
 clean:
 	rm -rf build obj_dir $(OBJ_DIR) logs
 

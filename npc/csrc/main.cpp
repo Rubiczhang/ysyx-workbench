@@ -19,7 +19,9 @@ std::unique_ptr<Vtop> top;
 void exit_routine(){
     std::cout << "exting..." <<std::endl;
     #ifdef TRACE_ENABLE
+        std::cout << "Point 1..." <<std::endl;
         if(tfp){
+            std::cout << "Point 2..." <<std::endl;
             tfp->flush();
             tfp->close();
         }
@@ -66,6 +68,7 @@ int main(int argc, char** argv){
     // nvboard_bind_all_pins(top.get());
     // nvboard_init();
 #ifdef TRACE_ENABLE
+    printf("---------------Trace Enable");
     top->contextp()->traceEverOn(true);
     // const char* flag = Verilated::commandArgsPlusMatch("trace");
     // if(flag && 0 == std::strcmp(flag, "+trace")){

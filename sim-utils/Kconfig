@@ -36,6 +36,17 @@ if MODE_SYSTEM
 endif
 
 choice
+  prompt "Build target"
+  default TARGET_NATIVE_ELF
+config TARGET_NATIVE_ELF
+  bool "Executable on Linux Native"
+config TARGET_SHARE
+  bool "Shared object (used as REF for differential testing)"
+config TARGET_AM
+  bool "Application on Abstract-Machine (DON'T CHOOSE)"
+endchoice
+
+choice
   prompt "Base ISA"
   default ISA_riscv
 config ISA_x86
@@ -85,7 +96,8 @@ config TRACE_END
   default 10000
 
 config ITRACE
-  depends on TRACE && (SIM_NPC || TARGET_NATIVE_ELF && ENGINE_INTERPRETER)
+  depends on TRACE && (SIM_NPC || (TARGET_NATIVE_ELF && ENGINE_INTERPRETER))
+  # depends on TRACE && (SIM_NPC || (ENGINE_INTERPRETER))
   bool "Enable instruction tracer"
   default y
 
@@ -111,7 +123,7 @@ config BATCH_ITRACE
 
 
 config MTRACE
-  depends on TRACE && (SIM_NPC || TARGET_NATIVE_ELF && ENGINE_INTERPRETER)
+  depends on TRACE && (SIM_NPC || (TARGET_NATIVE_ELF && ENGINE_INTERPRETER))
   bool "Enable memory tracer"
   default n
 
@@ -120,6 +132,55 @@ config FTRACE
   bool "Enable function tracer"
   default n
 endmenu
+
+config DIFFTEST
+  depends on TARGET_NATIVE_ELF
+  bool "Enable differential testing"
+  default n
+  help
+    Enable differential testing with a reference design.
+    Note that this will significantly reduce the performance of NEMU.
+
+choice
+  prompt "Reference design"
+  default DIFFTEST_REF_NEMU  if SIM_NPC
+  default DIFFTEST_REF_SPIKE if ISA_riscv
+  default DIFFTEST_REF_KVM if ISA_x86
+  default DIFFTEST_REF_QEMU
+  depends on DIFFTEST
+config DIFFTEST_REF_QEMU
+  bool "QEMU, communicate with socket"
+
+if ISA_riscv && SIM_NPC
+config DIFFTEST_REF_NEMU
+  bool "Nemu"
+endif
+if ISA_riscv
+config DIFFTEST_REF_SPIKE
+  bool "Spike"
+endif
+if ISA_x86
+config DIFFTEST_REF_KVM
+  bool "KVM"
+endif
+endchoice
+
+config DIFFTEST_REF_PATH
+  string
+  default "../sim-utils/tools/qemu-diff" if DIFFTEST_REF_QEMU
+  default "../sim-utils/tools/kvm-diff" if DIFFTEST_REF_KVM
+  default "../sim-utils/tools/spike-diff" if DIFFTEST_REF_SPIKE
+  default "../sim-utils/tools/nemu-diff" if DIFFTEST_REF_NEMU
+  default "none"
+
+config DIFFTEST_REF_NAME
+  string
+  default "qemu" if DIFFTEST_REF_QEMU
+  default "kvm" if DIFFTEST_REF_KVM
+  default "spike" if DIFFTEST_REF_SPIKE
+  default "nemu" if DIFFTEST_REF_NEMU
+  default "none"
+
 
 endmenu
 

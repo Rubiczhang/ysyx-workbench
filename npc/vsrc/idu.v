@@ -12,7 +12,7 @@ module idu(
   input  [INST_WIDTH-1     : 0] instr_ifu_i,
   input  [ADDR_WIDTH-1     : 0] pc_ifu_i,
   //to execute unit
-  output [DYN_INST_WIDTH-1 : 0] dyn_instr_exu_o
+  output reg [DYN_INST_WIDTH-1 : 0] dyn_instr_exu_o
 );
 
 import "DPI-C" function void handle_ebreak();
@@ -45,7 +45,7 @@ reg                                 use_imm;
 wire                                invld_instr;
 
 wire    [DATA_WIDTH  -1   : 0]     imm_i_compu;     //imm computation i_type
-wire    [DATA_WIDTH  -1   : 0]     imm_i_compu;     //imm computation i_type
+// wire    [DATA_WIDTH  -1   : 0]     imm_i_compu;     //imm computation i_type
 wire    [DATA_WIDTH  -1   : 0]     imm_i_shamt;     // 添加 imm_i_shamt 的定义
 wire    [DATA_WIDTH  -1   : 0]     imm_u;           // 添加 imm_u 的定义
 wire    [DATA_WIDTH  -1   : 0]     imm_j;           // 添加 imm_j 的定义
@@ -83,21 +83,28 @@ assign is_func7_allzr = (func7 == FUNC7_ALLZR);
 assign is_i_type = (instr_type == I_COMPU_INSTR || instr_type == I_SHIFT_INSTR
                     || instr_type == I_ECALL_INSTR || instr_type == I_EBREAK_INSTR);
 
-assign dyn_instr_exu_o[RS1_HI_DYNOFF: RS1_LO_DYNOFF] = rs1;
-assign dyn_instr_exu_o[RS2_HI_DYNOFF: RS2_LO_DYNOFF] = rs2;
-assign dyn_instr_exu_o[RD_HI_DYNOFF: RD_LO_DYNOFF] =   rd;
-assign dyn_instr_exu_o[RS1VAL_HI_DYNOFF     :   RS1VAL_LO_DYNOFF]  = rs1_val;
-assign dyn_instr_exu_o[RS2VAL_HI_DYNOFF     :   RS2VAL_LO_DYNOFF]  = rs2_val;
-assign dyn_instr_exu_o[IMM_HI_DYNOFF        :   IMM_LO_DYNOFF   ]  = imm;
-assign dyn_instr_exu_o[PC_HI_DYNOFF        :    PC_LO_DYNOFF   ]  =  pc_ifu_i;
-assign dyn_instr_exu_o[FUID_HI_DYNOFF       :   FUID_LO_DYNOFF ]  = fu_id;
-assign dyn_instr_exu_o[INSTYPE_HI_DYNOFF: INSTYPE_LO_DYNOFF]      = instr_type;
-assign dyn_instr_exu_o[USE_RS1_DYNOFF]  =             use_rs1;
-assign dyn_instr_exu_o[USE_RS2_DYNOFF]  =             use_rs2;
-assign dyn_instr_exu_o[USE_IMM_DYNOFF]  =             use_imm;
-assign dyn_instr_exu_o[INVLD_INSTR_DYNOFF]  =         invld_instr;
-assign dyn_instr_exu_o[ALUOP_HI_DYNOFF      :   ALUOP_LO_DYNOFF]  = alu_op;
-assign dyn_instr_exu_o[USE_RD_DYNOFF]  =    use_rd;
+always @(*) begin
+  if(!rst_n) begin
+    dyn_instr_exu_o = {DYN_INST_WIDTH{1'b0}};
+  end else begin
+    dyn_instr_exu_o[RS1_HI_DYNOFF: RS1_LO_DYNOFF] = rs1;
+    dyn_instr_exu_o[RS2_HI_DYNOFF: RS2_LO_DYNOFF] = rs2;
+    dyn_instr_exu_o[RD_HI_DYNOFF: RD_LO_DYNOFF] =   rd;
+    dyn_instr_exu_o[RS1VAL_HI_DYNOFF     :   RS1VAL_LO_DYNOFF]  = rs1_val;
+    dyn_instr_exu_o[RS2VAL_HI_DYNOFF     :   RS2VAL_LO_DYNOFF]  = rs2_val;
+    dyn_instr_exu_o[IMM_HI_DYNOFF        :   IMM_LO_DYNOFF   ]  = imm;
+    dyn_instr_exu_o[PC_HI_DYNOFF        :    PC_LO_DYNOFF   ]  =  pc_ifu_i;
+    dyn_instr_exu_o[FUID_HI_DYNOFF       :   FUID_LO_DYNOFF ]  = fu_id;
+    dyn_instr_exu_o[INSTYPE_HI_DYNOFF: INSTYPE_LO_DYNOFF]      = instr_type;
+    dyn_instr_exu_o[USE_RS1_DYNOFF]  =             use_rs1;
+    dyn_instr_exu_o[USE_RS2_DYNOFF]  =             use_rs2;
+    dyn_instr_exu_o[USE_IMM_DYNOFF]  =             use_imm;
+    dyn_instr_exu_o[INVLD_INSTR_DYNOFF]  =         invld_instr;
+    dyn_instr_exu_o[ALUOP_HI_DYNOFF      :   ALUOP_LO_DYNOFF]  = alu_op;
+    dyn_instr_exu_o[USE_RD_DYNOFF]  =    use_rd;
+  end
+end
+
 //typedecoder
 always @(*) begin
 

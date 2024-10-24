@@ -56,3 +56,7 @@ inline word_t getpc(){
 inline word_t getgpr(int idx){
   return gpr(idx);
 }
+
+inline void setgpr(int idx, uint32_t val){
+  gpr(idx)= val;
+}

@@ -89,5 +89,12 @@ word_t getCmtImm(){
   return ret_val;
 }
 
+word_t getCmtRdNxtVal(){
+  getsetScope("TOP.top.u_npc.u_exeu");
+  int ret_val = 0;
+  top.get()->readExeuRdNxtVal(&ret_val);
+  return ret_val;
+}
+
 }
 

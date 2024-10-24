@@ -35,10 +35,17 @@ extern uint64_t g_nr_guest_inst ;
 // static uint64_t g_timer = 0; // unit: us
 extern bool g_print_step;
 
+// void* get_isa_cpu_st(CPU_state* st){
+//   for(int i = 0;i < MUXDEF(CONFIG_RVE, 16, 32); i++){
+//     st->gpr[i] = getgpr(i);
+//   }
+//   st->pc = getpc();
+// }
 
 void device_update();
 void gen_trace(Decode *s);
 void trace_and_difftest(Decode *_this, vaddr_t dnpc) ;
+
 // static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 // #if  defined(CONFIG_ITRACE_COND) && defined(CONFIG_IRINGBUF)
 //   strncpy(iring_buf.str_buf[iring_buf.hdr], _this->logbuf, ITRACE_MAX_LEN);
