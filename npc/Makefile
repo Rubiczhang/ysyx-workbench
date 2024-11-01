@@ -105,7 +105,7 @@ sim: $(VSRCS) $(CSRCS) $(CXXSRCS) $(SRC_AUTO_BIND) $(NVBOARD_ARCHIVE)
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	verilator $(VERILATOR_BASEOPTION) 
 
-run: 
+run:
 	$(NPCEXEC)
 
 run_diff: ARGS+=-d $(NEMU_HOME)/build/riscv32-nemu-interpreter-so
@@ -137,7 +137,7 @@ reg_test:
 	make sim
 
 wave:
-	gtkwave logs/vlt_dump.fst
+	gtkwave logs/vlt_dump.fst &
 clean:
 	rm -rf build obj_dir $(OBJ_DIR) logs
 

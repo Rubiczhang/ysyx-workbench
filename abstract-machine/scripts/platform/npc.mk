@@ -16,6 +16,8 @@ CFLAGS += -DMAINARGS=\"$(mainargs)\"
 .PHONY: $(AM_HOME)/am/src/riscv/npc/trm.c
 NPCFLAGS += 
 
+# $(info ############$(IMAGE))
+
 image: $(IMAGE).elf
 	@$(OBJDUMP) -d $(IMAGE).elf > $(IMAGE).txt
 	@echo + OBJCOPY "->" $(IMAGE_REL).bin
@@ -28,7 +30,7 @@ run_elf: NPCFLAGS += -w elf
 run_elf: image
 	$(MAKE) -C $(NPC_HOME) run ARGS="$(NPCFLAGS)" IMG=$(IMAGE).elf
 
-run_diff:
+run_diff: image
 	$(MAKE) -C $(NPC_HOME) run_diff ARGS="$(NPCFLAGS)" IMG=$(IMAGE).bin
   
 

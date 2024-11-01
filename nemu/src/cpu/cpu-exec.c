@@ -35,7 +35,7 @@ extern uint64_t g_nr_guest_inst ;
 // static uint64_t g_timer = 0; // unit: us
 extern bool g_print_step;
 
-// void* get_isa_cpu_st(CPU_state* st){
+// void* get_ref_isa_cpu_st(CPU_state* st){
 //   for(int i = 0;i < MUXDEF(CONFIG_RVE, 16, 32); i++){
 //     st->gpr[i] = getgpr(i);
 //   }
