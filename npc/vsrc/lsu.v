@@ -48,7 +48,7 @@ assign  signed_load = lsu_pkg_idu_i[SIGNED_LOAD_LSUOFF];
 
 
 
-assign addr_dcache_o = ls_addr_base + {{(ADRBASE_LSULEN-ADROFF_LSULEN){1'b0}}, ls_addr_off};
+assign addr_dcache_o = ls_addr_base + {{(ADRBASE_LSULEN-ADROFF_LSULEN){ls_addr_off[ADROFF_LSULEN-1]}}, ls_addr_off};
 assign st_dat_dcache_o = st_dat;
 assign ls_wdth_dcache_o = ls_wdth;
 assign ls_dcache_o      = ls;
