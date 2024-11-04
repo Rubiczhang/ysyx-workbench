@@ -7,25 +7,72 @@
 
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 
+//leagel place holder format:    %, flag chars,  width(decimal int), place holaders
 
-static const char * validPlchdr = "%sdp"; //valid place holder
+static const char * validPlchdr = "%csdp"; //valid place holder
+
+static const char* validFlagChars = "0";
+static const int idValidFlagChar[129] = {['0'] = 1};
+
+// static const char* flagVlidPlchrs[] = {"diouxXaAeEfFgG"};
+static const char* flagVlidPlchrs[] = {"%csdp", "d"};
+
+
+static int charIdxStr(const char ch, const char* str, const int len){
+  int i = 0;
+  for(i = 0; i < len; i++){
+    if(ch == str[i]){
+      break;
+    }
+  }
+  return i;
+}
+
+static bool isCharInStr(const char ch, const char* str, const int len){
+  return len != charIdxStr(ch, str, len);
+}
+
+//in: str, idx, len
+//out: idx, width
+//idx would be updated to the end
+static int readIntFromStr(const char* str, int* idx, int len, int* width){
+  int i = *idx;
+  int ans = 0;
+  if(width) *width = 0;
+  while(i < len &&  '0' <= str[i] && str[i] <= '9'){
+    ans = ans * 10 + (str[i]-'0');
+    i++;
+    if(width) *width++;
+  }
+  *idx = i;
+  return ans;
+}
 
 static bool checkValid(const char *fmt, const char *validPlchdr){
   //format, valid place holder
   int len = strlen(fmt);
-  int lenPlchdr = strlen(validPlchdr);
+  // int lenPlchdr = strlen(validPlchdr);
   bool lastIsPst = false; //last is %
   for(int i = 0; i < len; i++){
     if(!lastIsPst && fmt[i] == '%'){
       lastIsPst = true;
     }
     else if(lastIsPst == true){
-      int j = 0;
-      for(; j < lenPlchdr && fmt[i] != validPlchdr[j]; j++)
-        ;
-      if(j == lenPlchdr){
+      char flag = '\0';
+
+      // if(strlen(validFlagChars) != charIdxStr(fmt[i], validFlagChars, strlen(validFlagChars))){
+      if(isCharInStr(fmt[i], validFlagChars, strlen(validFlagChars))){
+        flag = fmt[i];
+        i++;
+        panic_on(i >= len, "Invalid format place holders\n");
+      }
+      readIntFromStr(fmt, &i, len, NULL);
+      panic_on(i >= len, "Invalid format place holder\n");
+
+      if(!isCharInStr(fmt[i], flagVlidPlchrs[idValidFlagChar[(int)flag]], strlen(flagVlidPlchrs[idValidFlagChar[(int)flag]]))){
         return false;
       }
+
       lastIsPst = false;
     }
   }
@@ -66,6 +113,17 @@ static int print_str(char* out, int len, va_list *ap){
   return len;
 }
 
+static int print_ch(char* out, int len, va_list *ap){
+//in: out
+//out: fmt_step, out_step
+  char *strBuff;
+  strBuff = va_arg(*ap, char *);
+  int slen = 1;
+  len = slen < len? slen: len;
+  strncpy(out, strBuff, len);
+  return len;
+}
+
 static int print_pst(char* out, int len, va_list *ap){
 //in: out
 //out: fmt_step, out_step
@@ -80,6 +138,7 @@ static struct{
   {'x', print_ptr},
   {'d', print_dint},
   {'s', print_str},
+  {'c', print_ch},
   {'%', print_pst}
 };
 
@@ -135,7 +194,7 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
   //       default:
   //         panic("Invalid placeholder");
   //     }
-  //     fmtInd += fmt_step;
+  //     fmtInd += fmt_ste;
   //     outInd += out_step;
   //   }
   // }
@@ -165,8 +224,39 @@ static void handle_plchldr(char* out, const char* fmt, int* fmtInd, int* outInd,
   int fmt_step = 0;
   size_t len_plchldr_hndlr_tb = sizeof(plchldr_hdlr_table)/sizeof(plchldr_hdlr_table[0]);
   int i = 0;
+  // for(; i < len_plchldr_hndlr_tb; i++){
+  //   if(plchldr_hdlr_table[i].name == fmt[*fmtInd]){
+  //     // char flag = '\0';
+  //     out_step = plchldr_hdlr_table[i].handler(out+*outInd, *len_to_end, ap);
+  //     fmt_step = 1;
+  //     break;
+  //   }
+  // }
+  // if(i == len_plchldr_hndlr_tb)
+  //   panic("Invalid placeholder");
+
+
+// Flag chars
+  bool zr_padded = false;
+  if(isCharInStr(fmt[*fmtInd], validFlagChars, strlen(validFlagChars))){
+    if(fmt[*fmtInd] == '0'){
+      zr_padded = true;
+      // fmt_step++;
+      (*fmtInd)++;
+    }
+    else{
+      panic("Place Flags should be implemeted\n");
+    }
+  }
+
+// Width chars
+  int fmt_width = 0;
+  fmt_width = readIntFromStr(fmt, fmtInd, strlen(fmt), NULL);
+
+
   for(; i < len_plchldr_hndlr_tb; i++){
     if(plchldr_hdlr_table[i].name == fmt[*fmtInd]){
+      // char flag = '\0';
       out_step = plchldr_hdlr_table[i].handler(out+*outInd, *len_to_end, ap);
       fmt_step = 1;
       break;
@@ -174,6 +264,7 @@ static void handle_plchldr(char* out, const char* fmt, int* fmtInd, int* outInd,
   }
   if(i == len_plchldr_hndlr_tb)
     panic("Invalid placeholder");
+
   *fmtInd += fmt_step;
   *outInd += out_step;
   *len_to_end -= out_step;
@@ -193,7 +284,7 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
       len_to_end--;
     }
     else{
-      handle_plchldr(out, fmt, &fmtInd, &outInd, &len_to_end, &ap);
+      handle_plchldr(out, fmt, &fmtInd, &outInd, &len_to_end, (va_list*)&ap);
     }
   }
   va_end(ap);
