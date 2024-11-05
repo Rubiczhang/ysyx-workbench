@@ -3,9 +3,17 @@
 #include <klib-macros.h>
 #include <stdarg.h>
 
+
 #define MAX_BUF_LEN (1 << 15)
 
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
+
+// #define STAR_IF_NOT_NATIVE MUXDEF(__NATIVE_USE_KLIB__, *,  )
+#if defined (__NATIVE_USE_KLIB__) &&  defined(__ISA_NATIVE__)
+#define STAR_IF_NOT_NATIVE 
+#else
+#define STAR_IF_NOT_NATIVE *
+#endif
 
 //leagel place holder format:    %, flag chars,  width(decimal int), place holaders
 
@@ -48,7 +56,7 @@ static int readIntFromStr(const char* str, int* idx, int len, int* width){
   return ans;
 }
 
-static bool checkValid(const char *fmt, const char *validPlchdr){
+static bool checkValid(const char* const fmt, const char *validPlchdr){
   //format, valid place holder
   int len = strlen(fmt);
   // int lenPlchdr = strlen(validPlchdr);
@@ -79,10 +87,10 @@ static bool checkValid(const char *fmt, const char *validPlchdr){
   return true;
 }
 
-typedef int(*plchldr_handler)(char* out, int len, va_list *ap);
+typedef int(*plchldr_handler)(char* out, int len, va_list STAR_IF_NOT_NATIVE ap);
 
-static int print_ptr(char* out, int len, va_list *ap){
-  uintptr_t x = (uintptr_t)va_arg(*ap, void *);
+static int print_ptr(char* out, int len, va_list STAR_IF_NOT_NATIVE ap){
+  uintptr_t x = (uintptr_t)va_arg(STAR_IF_NOT_NATIVE ap, void *);
   char buff[30];
   int slen = itoa(x, buff, 16);
   len = slen < len? slen: len;
@@ -90,10 +98,10 @@ static int print_ptr(char* out, int len, va_list *ap){
   return len;
 }
 
-static int print_dint(char* out, int len, va_list *ap){
+static int print_dint(char* out, int len, va_list STAR_IF_NOT_NATIVE ap){
 //in: out
 //out: fmt_step, out_step
-  int x = va_arg(*ap, int);
+  int x = va_arg(STAR_IF_NOT_NATIVE ap, int);
   char buff[30];
   int slen = itoa(x, buff, 10);
   len = slen < len? slen: len;
@@ -102,29 +110,29 @@ static int print_dint(char* out, int len, va_list *ap){
 }
 
 
-static int print_str(char* out, int len, va_list *ap){
+static int print_str(char* out, int len, va_list STAR_IF_NOT_NATIVE ap){
 //in: out
 //out: fmt_step, out_step
   char *strBuff;
-  strBuff = va_arg(*ap, char *);
+  strBuff = va_arg(STAR_IF_NOT_NATIVE ap, char *);
   int slen = strlen(strBuff);
   len = slen < len? slen: len;
   strncpy(out, strBuff, len);
   return len;
 }
 
-static int print_ch(char* out, int len, va_list *ap){
+static int print_ch(char* out, int len, va_list STAR_IF_NOT_NATIVE ap){
 //in: out
 //out: fmt_step, out_step
   char *strBuff;
-  strBuff = va_arg(*ap, char *);
+  strBuff = va_arg(STAR_IF_NOT_NATIVE ap, char *);
   int slen = 1;
   len = slen < len? slen: len;
   strncpy(out, strBuff, len);
   return len;
 }
 
-static int print_pst(char* out, int len, va_list *ap){
+static int print_pst(char* out, int len, va_list STAR_IF_NOT_NATIVE ap){
 //in: out
 //out: fmt_step, out_step
   out[0] = '%';
@@ -143,7 +151,7 @@ static struct{
 };
 
 
-int printf(const char *fmt, ...) {
+int printf(const char* const fmt, ...) {
 
   // panic("Not implemented");
   panic_on(!checkValid(fmt, validPlchdr), "checkNotValid");
@@ -162,7 +170,7 @@ int printf(const char *fmt, ...) {
 
 
 
-int vsprintf(char *out, const char *fmt, va_list ap) {
+int vsprintf(char *out, const char* const fmt, va_list ap) {
   return 0;
   // panic_on(!checkValid(fmt, validPlchdr), "checkNotValid");
   // int fmtLen = strlen(fmt);
@@ -204,7 +212,7 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
 }
 
 
-int sprintf(char *out, const char *fmt, ...) {
+int sprintf(char *out, const char* const fmt, ...) {
   va_list args;
   va_start(args, fmt);
   int len = vsnprintf(out, MAX_BUF_LEN, fmt, args);
@@ -214,11 +222,11 @@ int sprintf(char *out, const char *fmt, ...) {
 
 
 
-int snprintf(char *out, size_t n, const char *fmt, ...) {
+int snprintf(char *out, size_t n, const char* const fmt, ...) {
   panic("Not implemented");
 }
 
-static void handle_plchldr(char* out, const char* fmt, int* fmtInd, int* outInd, int* len_to_end, va_list *ap){
+static void handle_plchldr(char* out, const char* fmt, int* fmtInd, int* outInd, int* len_to_end, va_list STAR_IF_NOT_NATIVE ap){
 
   int out_step = 0;
   int fmt_step = 0;
@@ -270,13 +278,17 @@ static void handle_plchldr(char* out, const char* fmt, int* fmtInd, int* outInd,
   *len_to_end -= out_step;
 }
 
-int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
+int vsnprintf(char *out, size_t n, const char* const fmt, va_list ap) {
   panic_on(!checkValid(fmt, validPlchdr), "checkNotValid");
   int fmtLen = strlen(fmt);
   int outInd = 0;
   // puts("---format:");
   // puts(fmt);
   int len_to_end = n - outInd - 2;      //vsnprintf put at most n chars, including the '\0'
+  // char* str;
+
+  // str = va_arg(STAR_IF_NOT_NATIVE ap, char *);
+  // str = print_str(out, 100, (va_list*)ap);
   for(int fmtInd = 0 ; fmtInd < fmtLen && len_to_end > 0;){
     assert(len_to_end >= 0);
     if(fmt[fmtInd++] != '%'){
@@ -284,7 +296,12 @@ int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {
       len_to_end--;
     }
     else{
+
+#if defined (__NATIVE_USE_KLIB__) &&  defined(__ISA_NATIVE__)
+      handle_plchldr(out, fmt, &fmtInd, &outInd, &len_to_end,ap);
+#else
       handle_plchldr(out, fmt, &fmtInd, &outInd, &len_to_end, (va_list*)&ap);
+#endif
     }
   }
   va_end(ap);

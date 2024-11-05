@@ -21,8 +21,10 @@ image:
 	@echo + LD "->" $(IMAGE_REL)
 	@g++ -pie -o $(IMAGE) -Wl,--whole-archive $(LINKAGE) -Wl,-no-whole-archive $(LDFLAGS_CXX) -lSDL2 -ldl
 
+run: DEBUG_CFLAGS=-Wno-error=unused-but-set-variable -Wno-error=unused-value
 run: image
 	$(IMAGE)
 
+gdb: DEBUG_CFLAGS= -g -O0 -Wno-error=unused-but-set-variable -Wno-error=unused-value
 gdb: image
 	gdb -ex "handle SIGUSR1 SIGUSR2 SIGSEGV noprint nostop" $(IMAGE)

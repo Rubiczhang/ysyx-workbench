@@ -127,33 +127,39 @@ always @(*) begin
 end
 
 
+alu u_alu(
+  .alu_oprd1(alu_oprd1),
+  .alu_oprd2(alu_oprd2),
+  .alu_op(alu_op),
+  .alu_ans(alu_ans)
+);
 
-//ALU module
-always @(*) begin
-  case(alu_op)
-    ADD_ALUOP:
-      alu_ans = alu_oprd1 + alu_oprd2; 
-    SUB_ALUOP:
-      alu_ans = alu_oprd1 - alu_oprd2;
-    SLL_ALUOP: 
-      alu_ans = alu_oprd1 << alu_oprd2[4:0];
-    SLT_ALUOP:
-      alu_ans = $signed(alu_oprd1) < $signed(alu_oprd2) ? 32'b0001: 32'b0;
-    SLTU_ALUOP:
-      alu_ans = $unsigned(alu_oprd1) < $unsigned(alu_oprd2) ? 32'b0001: 32'b0;
-    XOR_ALUOP:
-      alu_ans = alu_oprd1 ^ alu_oprd2;
-    SRL_ALUOP:
-      alu_ans = $unsigned(alu_oprd1) >> alu_oprd2[4:0];
-    SRA_ALUOP:
-      alu_ans = $signed(alu_oprd1) >>> alu_oprd2[4:0];
-    OR_ALUOP:
-      alu_ans = alu_oprd1 | alu_oprd2;
-    AND_ALUOP:
-      alu_ans = alu_oprd1 & alu_oprd2;
-    default: alu_ans = 0;
-  endcase
-end
+// //ALU module
+// always @(*) begin
+//   case(alu_op)
+//     ADD_ALUOP:
+//       alu_ans = alu_oprd1 + alu_oprd2; 
+//     SUB_ALUOP:
+//       alu_ans = alu_oprd1 - alu_oprd2;
+//     SLL_ALUOP: 
+//       alu_ans = alu_oprd1 << alu_oprd2[4:0];
+//     SLT_ALUOP:
+//       alu_ans = $signed(alu_oprd1) < $signed(alu_oprd2) ? 32'b0001: 32'b0;
+//     SLTU_ALUOP:
+//       alu_ans = $unsigned(alu_oprd1) < $unsigned(alu_oprd2) ? 32'b0001: 32'b0;
+//     XOR_ALUOP:
+//       alu_ans = alu_oprd1 ^ alu_oprd2;
+//     SRL_ALUOP:
+//       alu_ans = $unsigned(alu_oprd1) >> alu_oprd2[4:0];
+//     SRA_ALUOP:
+//       alu_ans = $signed(alu_oprd1) >>> alu_oprd2[4:0];
+//     OR_ALUOP:
+//       alu_ans = alu_oprd1 | alu_oprd2;
+//     AND_ALUOP:
+//       alu_ans = alu_oprd1 & alu_oprd2;
+//     default: alu_ans = 0;
+//   endcase
+// end
 
 //Branch address module
 //  pick_pc_trgt
