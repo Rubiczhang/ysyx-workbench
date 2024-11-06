@@ -17,13 +17,13 @@
 
 //leagel place holder format:    %, flag chars,  width(decimal int), place holaders
 
-static const char * validPlchdr = "%csdp"; //valid place holder
+static const char * validPlchdr = "%csdpux"; //valid place holder
 
 static const char* validFlagChars = "0";
 static const int idValidFlagChar[129] = {['0'] = 1};
 
 // static const char* flagVlidPlchrs[] = {"diouxXaAeEfFgG"};
-static const char* flagVlidPlchrs[] = {"%csdp", "d"};
+static const char* flagVlidPlchrs[] = {"%csdpux", "dux"};
 
 
 static int charIdxStr(const char ch, const char* str, const int len){
@@ -50,7 +50,7 @@ static int readIntFromStr(const char* str, int* idx, int len, int* width){
   while(i < len &&  '0' <= str[i] && str[i] <= '9'){
     ans = ans * 10 + (str[i]-'0');
     i++;
-    if(width) *width++;
+    if(width) (*width)++;
   }
   *idx = i;
   return ans;
@@ -92,7 +92,7 @@ typedef int(*plchldr_handler)(char* out, int len, va_list STAR_IF_NOT_NATIVE ap)
 static int print_ptr(char* out, int len, va_list STAR_IF_NOT_NATIVE ap){
   uintptr_t x = (uintptr_t)va_arg(STAR_IF_NOT_NATIVE ap, void *);
   char buff[30];
-  int slen = itoa(x, buff, 16);
+  int slen = itoa(x, buff, 16, false);
   len = slen < len? slen: len;
   strncpy(out, buff, len);
   return len;
@@ -103,7 +103,30 @@ static int print_dint(char* out, int len, va_list STAR_IF_NOT_NATIVE ap){
 //out: fmt_step, out_step
   int x = va_arg(STAR_IF_NOT_NATIVE ap, int);
   char buff[30];
-  int slen = itoa(x, buff, 10);
+  int slen = itoa(x, buff, 10, true);
+  len = slen < len? slen: len;
+  strncpy(out, buff, len);
+  return len;
+}
+
+static int print_uint(char* out, int len, va_list STAR_IF_NOT_NATIVE ap){
+//in: out
+//out: fmt_step, out_step
+  int x = va_arg(STAR_IF_NOT_NATIVE ap, int);
+  char buff[30];
+  int slen = itoa(x, buff, 10, false);
+  len = slen < len? slen: len;
+  strncpy(out, buff, len);
+  return len;
+}
+
+
+static int print_hexint(char* out, int len, va_list STAR_IF_NOT_NATIVE ap){
+//in: out
+//out: fmt_step, out_step
+  int x = va_arg(STAR_IF_NOT_NATIVE ap, int);
+  char buff[30];
+  int slen = itoa(x, buff, 16, false);
   len = slen < len? slen: len;
   strncpy(out, buff, len);
   return len;
@@ -145,6 +168,8 @@ static struct{
 } plchldr_hdlr_table[] = {
   {'x', print_ptr},
   {'d', print_dint},
+  {'u', print_uint},
+  {'x', print_hexint},
   {'s', print_str},
   {'c', print_ch},
   {'%', print_pst}
@@ -253,13 +278,14 @@ static void handle_plchldr(char* out, const char* fmt, int* fmtInd, int* outInd,
       (*fmtInd)++;
     }
     else{
-      panic("Place Flags should be implemeted\n");
+      panic_on(!zr_padded, "Place Flags should be implemeted\n");
     }
   }
 
 // Width chars
-  int fmt_width = 0;
-  fmt_width = readIntFromStr(fmt, fmtInd, strlen(fmt), NULL);
+  // int fild_width = 0;
+  // fild_width = readIntFromStr(fmt, fmtInd, strlen(fmt), NULL);
+  readIntFromStr(fmt, fmtInd, strlen(fmt), NULL);
 
 
   for(; i < len_plchldr_hndlr_tb; i++){
@@ -270,8 +296,10 @@ static void handle_plchldr(char* out, const char* fmt, int* fmtInd, int* outInd,
       break;
     }
   }
-  if(i == len_plchldr_hndlr_tb)
+  if(i == len_plchldr_hndlr_tb){
+    // printf("\nfmt: %c", fmt[*fmtInd]);
     panic("Invalid placeholder");
+  }
 
   *fmtInd += fmt_step;
   *outInd += out_step;
